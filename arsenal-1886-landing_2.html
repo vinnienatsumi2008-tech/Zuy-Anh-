@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARSENAL 1886 — Bộ Sưu Tập Áo Đấu Độc Quyền</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0d;
+    --bg-1:#101215;
+    --card:#15171b;
+    --card-2:#1a1d22;
+    --line:rgba(255,255,255,.08);
+    --line-strong:rgba(255,255,255,.14);
+    --red:#d81e3d;
+    --red-dim:#8c1428;
+    --gold:#e8c468;
+    --cream:#f1ede4;
+    --text:#ece9e2;
+    --mute:#8b8d93;
+    --mute-2:#5f6167;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--red);color:#fff;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--gold);
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:'';width:22px;height:1px;background:var(--gold);}
+  h1,h2,h3,h4{
+    font-family:'Big Shoulders Display',sans-serif;
+    text-transform:uppercase;
+    line-height:0.92;
+    letter-spacing:.005em;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:1000;
+    padding:22px 0;
+    transition:all .35s ease;
+    border-bottom:1px solid transparent;
+  }
+  nav.scrolled{
+    padding:14px 0;
+    background:rgba(10,11,13,.86);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:22px;letter-spacing:.02em;text-transform:uppercase;}
+  .brand-mark{width:34px;height:34px;border:1.5px solid var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--red);flex-shrink:0;}
+  .brand small{display:block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;font-weight:400;margin-top:2px;}
+  .nav-links{display:flex;gap:38px;font-size:14px;font-weight:500;color:var(--mute);}
+  .nav-links a{transition:color .2s;position:relative;}
+  .nav-links a:hover{color:var(--text);}
+  .nav-cta{
+    background:var(--red);color:#fff;padding:11px 24px;border-radius:3px;
+    font-size:13px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+    transition:transform .2s, background .2s;
+  }
+  .nav-cta:hover{background:#ef2947;transform:translateY(-1px);}
+  .nav-mobile-hide{display:flex;}
+  @media(max-width:860px){.nav-links{display:none;}}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;align-items:center;
+    padding:140px 0 100px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(216,30,61,.16), transparent 60%),
+      linear-gradient(180deg,#0a0b0d 0%, #0a0b0d 100%);
+  }
+  .floodlight{
+    position:absolute;top:-20%;left:50%;
+    width:2400px;height:2400px;
+    transform:translateX(-50%);
+    background:conic-gradient(from 200deg at 50% 50%, transparent 0deg, rgba(216,30,61,.10) 8deg, transparent 20deg, transparent 340deg);
+    animation:sweep 14s linear infinite;
+    pointer-events:none;
+    opacity:.8;
+  }
+  @keyframes sweep{ to{transform:translateX(-50%) rotate(360deg);} }
+  .hero-year{
+    position:absolute;
+    top:50%;right:-6%;
+    transform:translateY(-50%);
+    font-family:'Big Shoulders Display',sans-serif;
+    font-weight:900;
+    font-size:min(46vw,620px);
+    color:transparent;
+    -webkit-text-stroke:1px rgba(255,255,255,.06);
+    line-height:1;
+    pointer-events:none;
+    user-select:none;
+    z-index:0;
+  }
+  .hero .wrap{position:relative;z-index:2;}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:60px;align-items:end;}
+  @media(max-width:940px){.hero-grid{grid-template-columns:1fr;}}
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    border:1px solid var(--line-strong);
+    padding:7px 14px 7px 8px;border-radius:30px;
+    font-size:12px;color:var(--mute);margin-bottom:28px;
+    animation:fadeUp .8s ease both;
+  }
+  .hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 3px rgba(216,30,61,.25);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+  .hero h1{
+    font-size:clamp(52px,7.4vw,108px);
+    font-weight:800;
+    color:var(--cream);
+    animation:fadeUp .9s ease .05s both;
+  }
+  .hero h1 em{font-style:normal;color:var(--red);}
+  .hero-sub{
+    max-width:520px;font-size:18px;line-height:1.65;color:var(--mute);
+    margin:26px 0 38px;
+    animation:fadeUp .9s ease .15s both;
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;animation:fadeUp .9s ease .25s both;}
+  .btn-primary{
+    background:var(--red);color:#fff;padding:16px 30px;border-radius:3px;
+    font-weight:700;font-size:14.5px;letter-spacing:.02em;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:10px;
+    transition:transform .2s,box-shadow .2s;
+    box-shadow:0 0 0 rgba(216,30,61,0);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px -8px rgba(216,30,61,.55);}
+  .btn-ghost{
+    border:1px solid var(--line-strong);color:var(--text);padding:16px 28px;border-radius:3px;
+    font-weight:600;font-size:14.5px;transition:all .2s;
+  }
+  .btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+
+  /* countdown card */
+  .drop-card{
+    background:linear-gradient(160deg,var(--card-2),var(--card));
+    border:1px solid var(--line);border-radius:10px;
+    padding:30px;animation:fadeUp 1s ease .2s both;
+  }
+  .drop-card .eyebrow{margin-bottom:16px;}
+  .drop-card h3{font-size:26px;color:var(--cream);margin-bottom:18px;font-weight:700;}
+  .countdown{display:flex;gap:10px;margin-bottom:22px;}
+  .countdown .box{
+    flex:1;background:var(--bg-1);border:1px solid var(--line);border-radius:6px;
+    text-align:center;padding:14px 4px;
+  }
+  .countdown .num{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:600;color:var(--gold);}
+  .countdown .lbl{font-size:10px;color:var(--mute-2);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;}
+  .drop-stats{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:18px;}
+  .drop-stats div{text-align:left;}
+  .drop-stats .v{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--text);font-weight:600;}
+  .drop-stats .k{font-size:11px;color:var(--mute-2);margin-top:2px;text-transform:uppercase;letter-spacing:.06em;}
+
+  .stripline{
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:20px 0;margin-top:90px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px 40px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mute-2);letter-spacing:.05em;
+  }
+  .stripline span b{color:var(--text);font-weight:600;}
+
+  /* ---------- SECTION SHARED ---------- */
+  section{padding:130px 0;position:relative;}
+  .sec-head{max-width:640px;margin-bottom:64px;}
+  .sec-head h2{font-size:clamp(36px,4.6vw,58px);color:var(--cream);font-weight:800;margin-top:16px;}
+  .sec-head p{color:var(--mute);font-size:16.5px;margin-top:18px;line-height:1.6;}
+
+  /* ---------- FEATURES GRID ---------- */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  @media(max-width:900px){.feat-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:600px){.feat-grid{grid-template-columns:1fr;}}
+  .feat-card{
+    background:var(--card);padding:38px 32px;
+    transition:background .3s;
+    position:relative;
+  }
+  .feat-card:hover{background:var(--card-2);}
+  .feat-card .fi{
+    width:44px;height:44px;border-radius:8px;background:rgba(216,30,61,.12);
+    display:flex;align-items:center;justify-content:center;margin-bottom:22px;
+    color:var(--red);
+  }
+  .feat-card .fi svg{width:22px;height:22px;stroke:var(--red);fill:none;stroke-width:1.6;}
+  .feat-card h4{font-size:21px;color:var(--cream);font-weight:700;margin-bottom:10px;text-transform:none;letter-spacing:0;}
+  .feat-card p{font-size:14.5px;color:var(--mute);line-height:1.6;}
+  .feat-card .tag{
+    position:absolute;top:32px;right:32px;font-family:'JetBrains Mono',monospace;
+    font-size:11px;color:var(--mute-2);
+  }
+
+  /* ---------- SPEC / SHOWCASE ---------- */
+  .showcase{
+    background:var(--bg-1);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  }
+  .show-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:70px;align-items:center;}
+  @media(max-width:900px){.show-grid{grid-template-columns:1fr;}}
+  .jersey-frame{
+    aspect-ratio:4/5;border-radius:12px;
+    background:linear-gradient(155deg,#16181c,#0d0e10);
+    border:1px solid var(--line);position:relative;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .jersey-frame::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at 30% 20%, rgba(216,30,61,.18), transparent 55%);
+  }
+  .jersey-svg{width:56%;position:relative;z-index:1;filter:drop-shadow(0 30px 50px rgba(0,0,0,.5));}
+  .spec-list{list-style:none;}
+  .spec-list li{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:20px 0;border-bottom:1px solid var(--line);
+  }
+  .spec-list li:first-child{padding-top:0;}
+  .spec-list .k{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute-2);}
+  .spec-list .v{font-size:17px;font-weight:600;color:var(--cream);text-align:right;}
+  .size-row{display:flex;gap:8px;margin-top:30px;flex-wrap:wrap;}
+  .size-chip{
+    width:44px;height:44px;border:1px solid var(--line-strong);border-radius:6px;
+    display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;
+    font-size:13px;color:var(--mute);cursor:default;transition:all .2s;
+  }
+  .size-chip:hover{border-color:var(--gold);color:var(--gold);}
+
+  /* ---------- PRICING ---------- */
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  @media(max-width:900px){.price-grid{grid-template-columns:1fr;max-width:440px;margin:0 auto;}}
+  .price-card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:38px 32px;display:flex;flex-direction:column;
+    transition:transform .3s, border-color .3s;
+  }
+  .price-card:hover{transform:translateY(-6px);}
+  .price-card.feat{
+    border:1px solid var(--red);
+    background:linear-gradient(165deg,#1c1315,var(--card));
+    position:relative;
+  }
+  .price-card.feat::before{
+    content:'PHỔ BIẾN NHẤT';
+    position:absolute;top:-13px;left:32px;
+    background:var(--red);color:#fff;font-size:10.5px;font-weight:700;
+    letter-spacing:.08em;padding:5px 12px;border-radius:20px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .price-card h4{font-size:15px;color:var(--mute);text-transform:uppercase;letter-spacing:.08em;font-weight:600;font-family:'JetBrains Mono',monospace;}
+  .price-amt{font-family:'Big Shoulders Display',sans-serif;font-size:52px;font-weight:800;color:var(--cream);margin:16px 0 4px;}
+  .price-amt sup{font-size:18px;font-weight:600;color:var(--mute);margin-left:4px;}
+  .price-note{font-size:13px;color:var(--mute-2);margin-bottom:26px;}
+  .price-feats{list-style:none;margin-bottom:32px;flex:1;}
+  .price-feats li{display:flex;gap:10px;padding:9px 0;font-size:14.5px;color:var(--text);}
+  .price-feats li svg{width:16px;height:16px;stroke:var(--gold);flex-shrink:0;margin-top:3px;}
+  .price-feats li.off{color:var(--mute-2);}
+  .price-feats li.off svg{stroke:var(--mute-2);}
+  .price-btn{
+    text-align:center;padding:14px;border-radius:4px;font-weight:700;font-size:14px;
+    text-transform:uppercase;letter-spacing:.02em;border:1px solid var(--line-strong);
+    transition:all .2s;
+  }
+  .price-card.feat .price-btn{background:var(--red);border-color:var(--red);color:#fff;}
+  .price-btn:hover{border-color:var(--gold);color:var(--gold);}
+  .price-card.feat .price-btn:hover{background:#ef2947;color:#fff;border-color:#ef2947;}
+
+  /* ---------- TESTIMONIALS ---------- */
+  .test-strip{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:70px 0;}
+  .test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
+  @media(max-width:860px){.test-grid{grid-template-columns:1fr;}}
+  .test-card{background:var(--bg);padding:38px;}
+  .stars{display:flex;gap:3px;margin-bottom:18px;}
+  .stars svg{width:14px;height:14px;fill:var(--gold);}
+  .test-card p{font-size:15.5px;line-height:1.7;color:var(--text);margin-bottom:22px;}
+  .test-who{display:flex;align-items:center;gap:12px;}
+  .test-who .av{width:38px;height:38px;border-radius:50%;background:var(--red-dim);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--cream);}
+  .test-who .name{font-size:14px;font-weight:600;color:var(--cream);}
+  .test-who .role{font-size:12.5px;color:var(--mute-2);}
+
+  /* ---------- FAQ ---------- */
+  .faq-list{max-width:760px;}
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-q{
+    padding:26px 0;display:flex;justify-content:space-between;align-items:center;
+    cursor:pointer;font-size:17px;font-weight:600;color:var(--cream);gap:20px;
+  }
+  .faq-q .plus{width:22px;height:22px;flex-shrink:0;position:relative;}
+  .faq-q .plus::before,.faq-q .plus::after{content:'';position:absolute;background:var(--mute);transition:transform .3s,background .3s;}
+  .faq-q .plus::before{width:14px;height:1.5px;top:50%;left:50%;transform:translate(-50%,-50%);}
+  .faq-q .plus::after{width:1.5px;height:14px;top:50%;left:50%;transform:translate(-50%,-50%);}
+  .faq-item.open .faq-q .plus::after{transform:translate(-50%,-50%) rotate(90deg);opacity:0;}
+  .faq-item.open .faq-q{color:var(--red);}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;}
+  .faq-a p{padding-bottom:26px;color:var(--mute);font-size:15px;line-height:1.7;max-width:640px;}
+
+  /* ---------- CTA BAND ---------- */
+  .cta-band{
+    background:linear-gradient(135deg,#180a0d,#0a0b0d 60%);
+    border-top:1px solid var(--line);
+    text-align:center;padding:120px 0;position:relative;overflow:hidden;
+  }
+  .cta-band::before{
+    content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);
+    width:900px;height:900px;border-radius:50%;
+    background:radial-gradient(circle,rgba(216,30,61,.14),transparent 65%);
+  }
+  .cta-band .wrap{position:relative;z-index:1;}
+  .cta-band h2{font-size:clamp(38px,5.4vw,64px);color:var(--cream);font-weight:800;margin-bottom:22px;}
+  .cta-band p{color:var(--mute);font-size:17px;max-width:480px;margin:0 auto 38px;}
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:70px 0 40px;border-top:1px solid var(--line);}
+  .foot-grid{display:grid;grid-template-columns:1.6fr repeat(3,1fr);gap:40px;margin-bottom:60px;}
+  @media(max-width:800px){.foot-grid{grid-template-columns:1fr 1fr;}}
+  .foot-grid h5{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--mute-2);margin-bottom:18px;font-family:'JetBrains Mono',monospace;font-weight:500;}
+  .foot-grid ul{list-style:none;}
+  .foot-grid li{margin-bottom:11px;}
+  .foot-grid a{color:var(--mute);font-size:14px;transition:color .2s;}
+  .foot-grid a:hover{color:var(--gold);}
+  .foot-desc{color:var(--mute);font-size:14.5px;line-height:1.7;max-width:280px;margin-top:16px;}
+  .foot-bottom{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;
+    padding-top:30px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--mute-2);
+  }
+
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="wrap">
+    <div class="brand">
+      <span class="brand-mark">A</span>
+      <span>ARSENAL 1886<small>Kit Collection</small></span>
+    </div>
+    <div class="nav-links">
+      <a href="#features">Đặc quyền</a>
+      <a href="#showcase">Sản phẩm</a>
+      <a href="#pricing">Bảng giá</a>
+      <a href="#reviews">Đánh giá</a>
+      <a href="#faq">Hỏi đáp</a>
+    </div>
+    <a href="#pricing" class="nav-cta">Đặt ngay</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="floodlight"></div>
+  <div class="hero-year">1886</div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge"><span class="dot"></span> Chỉ 500 bộ được phát hành — Mùa giải 2026/27</div>
+        <h1>Áo đấu<br>cho người<br><em>xem thật.</em></h1>
+        <p class="hero-sub">Vải thi đấu chuẩn thi đấu, form dáng chính xác từng milimet, thêu tên số theo yêu cầu. Đây không phải một chiếc áo phông — đây là tấm vé bước vào Emirates.</p>
+        <div class="hero-actions">
+          <a href="#pricing" class="btn-primary">Chọn phiên bản của bạn →</a>
+          <a href="#showcase" class="btn-ghost">Xem chi tiết vải</a>
+        </div>
+      </div>
+
+      <div class="drop-card">
+        <div class="eyebrow">Ưu đãi kết thúc sau</div>
+        <div class="countdown">
+          <div class="box"><div class="num" id="cd-h">08</div><div class="lbl">Giờ</div></div>
+          <div class="box"><div class="num" id="cd-m">42</div><div class="lbl">Phút</div></div>
+          <div class="box"><div class="num" id="cd-s">17</div><div class="lbl">Giây</div></div>
+        </div>
+        <div class="drop-stats">
+          <div><div class="v">4.9 / 5</div><div class="k">2,140 đánh giá</div></div>
+          <div><div class="v">96%</div><div class="k">đã bán</div></div>
+          <div><div class="v">1–3 ngày</div><div class="k">giao hàng</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stripline">
+      <span><b>Chất liệu</b> · AEROREADY® tái chế</span>
+      <span><b>Thêu tên số</b> · Miễn phí trọn bộ</span>
+      <span><b>Bảo hành</b> · Đổi form 30 ngày</span>
+      <span><b>Xác thực</b> · Tem NFC chống giả</span>
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Vì sao chọn bộ sưu tập này</div>
+      <h2>Từng đường chỉ đều có lý do.</h2>
+      <p>Không phải hàng chợ gắn mác. Mỗi chi tiết được kiểm định qua quy trình 6 bước trước khi đến tay bạn.</p>
+    </div>
+
+    <div class="feat-grid reveal">
+      <div class="feat-card">
+        <div class="fi"><svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><path d="M16 8L2 22"/><path d="M17.5 15H9"/></svg></div>
+        <h4>Vải thi đấu thật</h4>
+        <p>Cùng công nghệ thoát ẩm AEROREADY® dùng trên sân, không phải bản polyester đại trà.</p>
+      </div>
+      <div class="feat-card">
+        <div class="fi"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6.3L12 16l-5.5 3.5 1-6.3L3 8.9 9 8z"/></svg></div>
+        <h4>Thêu tên số cao tần</h4>
+        <p>In ép nhiệt chuẩn CLB, không bong tróc sau 50 lần giặt. Miễn phí cho mọi đơn hàng.</p>
+      </div>
+      <div class="feat-card">
+        <div class="fi"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div>
+        <h4>Form dáng chuẩn EU</h4>
+        <p>Rập form riêng theo số đo cầu thủ, có bảng size chi tiết và tư vấn 1:1 trước khi đặt.</p>
+      </div>
+      <div class="feat-card">
+        <div class="fi"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <h4>Giao nhanh 1–3 ngày</h4>
+        <p>Kho hàng nội địa, theo dõi đơn realtime, đóng gói hộp cứng chống móp mép ngực áo.</p>
+      </div>
+      <div class="feat-card">
+        <div class="fi"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7z"/></svg></div>
+        <h4>Tem NFC xác thực</h4>
+        <p>Quét mã trong cổ áo để xác minh nguồn gốc — tránh mua nhầm hàng nhái trôi nổi.</p>
+        <span class="tag">100% chính hãng</span>
+      </div>
+      <div class="feat-card">
+        <div class="fi"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <h4>Đổi form 30 ngày</h4>
+        <p>Không vừa dáng? Đổi size miễn phí trong 30 ngày, kể cả khi đã thêu tên số riêng.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="showcase" class="showcase">
+  <div class="wrap">
+    <div class="show-grid">
+      <div class="jersey-frame reveal">
+        <svg class="jersey-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+          <path d="M60 20 L20 45 L35 75 L55 65 L55 200 L145 200 L145 65 L165 75 L180 45 L140 20 L120 10 Q100 25 80 10 Z" fill="#15171b" stroke="#d81e3d" stroke-width="2"/>
+          <path d="M80 10 Q100 25 120 10 L128 22 Q100 38 72 22 Z" fill="#0a0b0d" stroke="#e8c468" stroke-width="1"/>
+          <rect x="55" y="60" width="90" height="6" fill="#e8c468" opacity="0.5"/>
+          <text x="100" y="130" text-anchor="middle" font-family="Big Shoulders Display, sans-serif" font-size="46" font-weight="800" fill="#e8c468">7</text>
+        </svg>
+      </div>
+      <div class="reveal">
+        <div class="eyebrow">Thông số kỹ thuật</div>
+        <h2 style="font-size:clamp(32px,3.6vw,44px);color:var(--cream);font-weight:800;margin:16px 0 34px;">Đọc kỹ trước<br>khi xỏ tay áo.</h2>
+        <ul class="spec-list">
+          <li><span class="k">Chất liệu</span><span class="v">100% Polyester tái chế, AEROREADY®</span></li>
+          <li><span class="k">Trọng lượng</span><span class="v">180 gsm — mỏng nhẹ, thoáng khí</span></li>
+          <li><span class="k">Form dáng</span><span class="v">Regular Fit / Player Fit</span></li>
+          <li><span class="k">Công nghệ in</span><span class="v">Ép nhiệt Sublimation, không bong</span></li>
+          <li><span class="k">Xuất xứ</span><span class="v">Sản xuất theo tiêu chuẩn UEFA</span></li>
+        </ul>
+        <div class="eyebrow" style="margin-top:34px;">Bảng size có sẵn</div>
+        <div class="size-row">
+          <div class="size-chip">S</div>
+          <div class="size-chip">M</div>
+          <div class="size-chip">L</div>
+          <div class="size-chip">XL</div>
+          <div class="size-chip">XXL</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-left:auto;margin-right:auto;text-align:center;">
+      <div class="eyebrow" style="justify-content:center;">Bảng giá</div>
+      <h2>Chọn đúng gói,<br>không cần đắn đo.</h2>
+      <p style="margin-left:auto;margin-right:auto;">Ba lựa chọn rõ ràng, không phí ẩn, không phải "liên hệ để biết giá".</p>
+    </div>
+
+    <div class="price-grid reveal">
+      <div class="price-card">
+        <h4>Áo sân nhà</h4>
+        <div class="price-amt">890<sup>K₫</sup></div>
+        <div class="price-note">1 áo đấu, không thêu tên số</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>1 áo chính hãng</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Tem NFC xác thực</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Giao hàng tiêu chuẩn</li>
+          <li class="off"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thêu tên số riêng</li>
+          <li class="off"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Hộp quà cao cấp</li>
+        </ul>
+        <a href="#" class="price-btn">Chọn gói này</a>
+      </div>
+
+      <div class="price-card feat">
+        <h4>Bộ sưu tập đầy đủ</h4>
+        <div class="price-amt">1.590<sup>K₫</sup></div>
+        <div class="price-note">Áo sân nhà + sân khách, thêu tên số</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>2 áo (sân nhà + sân khách)</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thêu tên số miễn phí</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Giao nhanh 1–3 ngày</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Đổi form 30 ngày</li>
+          <li class="off"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Hộp quà cao cấp</li>
+        </ul>
+        <a href="#" class="price-btn">Chọn gói này</a>
+      </div>
+
+      <div class="price-card">
+        <h4>Collector Edition</h4>
+        <div class="price-amt">2.490<sup>K₫</sup></div>
+        <div class="price-note">Trọn bộ 3 áo, đóng hộp sưu tầm</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>3 áo (nhà, khách, thứ ba)</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thêu tên số miễn phí</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Hộp quà gỗ cao cấp</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thẻ số hiệu giới hạn</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Ưu tiên hỗ trợ riêng</li>
+        </ul>
+        <a href="#" class="price-btn">Chọn gói này</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" class="test-strip">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Người mua nói gì</div>
+      <h2 style="font-size:clamp(32px,3.6vw,46px);">2.140 lượt đánh giá,<br>4.9 trên 5 sao.</h2>
+    </div>
+  </div>
+  <div class="wrap" style="padding:0;max-width:1180px;">
+    <div class="test-grid reveal">
+      <div class="test-card">
+        <div class="stars">★★★★★</div>
+        <p>"Vải mát, form chuẩn như áo trên sân. Thêu tên số sắc nét, giặt máy 10 lần vẫn không bong."</p>
+        <div class="test-who"><div class="av">MT</div><div><div class="name">Minh Tuấn</div><div class="role">Fan 12 năm</div></div></div>
+      </div>
+      <div class="test-card">
+        <div class="stars">★★★★★</div>
+        <p>"Đóng gói cẩn thận, có tem NFC quét ra thông tin đầy đủ. Yên tâm hơn hẳn mua ở chợ mạng."</p>
+        <div class="test-who"><div class="av">HL</div><div><div class="name">Hoàng Long</div><div class="role">Khách mua lần 2</div></div></div>
+      </div>
+      <div class="test-card">
+        <div class="stars">★★★★★</div>
+        <p>"Đặt sai size, đổi lại trong 2 ngày không mất phí. Dịch vụ hỗ trợ trả lời cực nhanh."</p>
+        <div class="test-who"><div class="av">TA</div><div><div class="name">Thu Anh</div><div class="role">Mua tặng người thân</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Câu hỏi thường gặp</div>
+      <h2>Còn thắc mắc gì<br>trước khi đặt?</h2>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item open">
+        <div class="faq-q">Áo có phải hàng chính hãng không? <span class="plus"></span></div>
+        <div class="faq-a"><p>Mỗi áo đều đi kèm tem NFC gắn trong cổ áo. Quét bằng điện thoại để xác minh nguồn gốc, số lô sản xuất và tính xác thực sản phẩm.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Thời gian giao hàng bao lâu? <span class="plus"></span></div>
+        <div class="faq-a"><p>1–3 ngày làm việc với nội thành, 3–5 ngày với các tỉnh thành khác. Áo có thêu tên số riêng cộng thêm 1 ngày xử lý.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Tôi có thể đổi size sau khi nhận áo không? <span class="plus"></span></div>
+        <div class="faq-a"><p>Có. Chính sách đổi form trong 30 ngày áp dụng kể cả với áo đã thêu tên số, miễn áo còn nguyên tem và chưa qua sử dụng.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Số lượng phiên bản giới hạn là bao nhiêu? <span class="plus"></span></div>
+        <div class="faq-a"><p>Đợt phát hành này giới hạn 500 bộ trên toàn hệ thống, mỗi bộ có mã số hiệu riêng in trong hộp quà Collector Edition.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="wrap">
+    <div class="eyebrow" style="justify-content:center;">Chỉ còn số lượng có hạn</div>
+    <h2 style="margin-top:16px;">Đừng để hết hàng<br>trước hồi còi khai cuộc.</h2>
+    <p>96% số lượng đợt phát hành đã được đặt. Giữ chỗ chiếc áo của bạn trước khi hết ưu đãi thêu tên số miễn phí.</p>
+    <a href="#pricing" class="btn-primary">Đặt áo của bạn ngay →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand"><span class="brand-mark">A</span><span>ARSENAL 1886</span></div>
+        <p class="foot-desc">Bộ sưu tập áo đấu độc quyền dành cho những người xem trận đấu bằng cả trái tim, không chỉ bằng mắt.</p>
+      </div>
+      <div>
+        <h5>Sản phẩm</h5>
+        <ul>
+          <li><a href="#showcase">Áo sân nhà</a></li>
+          <li><a href="#showcase">Áo sân khách</a></li>
+          <li><a href="#pricing">Bảng giá</a></li>
+          <li><a href="#faq">Bảng size</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Hỗ trợ</h5>
+        <ul>
+          <li><a href="#faq">Chính sách đổi trả</a></li>
+          <li><a href="#faq">Theo dõi đơn hàng</a></li>
+          <li><a href="#faq">Xác thực NFC</a></li>
+          <li><a href="#">Liên hệ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Kết nối</h5>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Arsenal 1886 Kit Collection. Sản phẩm fan-made, không liên kết chính thức với câu lạc bộ.</span>
+      <span>Thiết kế cho những ai chỉ chấp nhận bản chính.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  let total = 8*3600 + 42*60 + 17;
+  const h = document.getElementById('cd-h'), m = document.getElementById('cd-m'), s = document.getElementById('cd-s');
+  function tick(){
+    if(total <= 0) return;
+    total--;
+    const hh = Math.floor(total/3600), mm = Math.floor((total%3600)/60), ss = total%60;
+    h.textContent = String(hh).padStart(2,'0');
+    m.textContent = String(mm).padStart(2,'0');
+    s.textContent = String(ss).padStart(2,'0');
+  }
+  setInterval(tick, 1000);
+
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    if(item.classList.contains('open')) a.style.maxHeight = a.scrollHeight + 'px';
+    q.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        a.style.maxHeight = a.scrollHeight + 'px';
+      }
+    });
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
+  }, {threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
