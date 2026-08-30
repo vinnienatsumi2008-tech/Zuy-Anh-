@@ -1,4 +1,5 @@
 import { Pool } from 'pg';
+import bcrypt from 'bcryptjs';
 
 export interface Product {
   id: string;
@@ -67,7 +68,15 @@ export interface Order {
   created_at: string;
 }
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:jXMqqFHHZCpR28ky@db.hytqhapubpatqfkckozk.supabase.co:5432/postgres';
+export interface AdminUser {
+  id: string;
+  username: string;
+  email: string;
+  role: string;
+  created_at: string;
+}
+
+const connectionString = process.env.DATABASE_URL || 'postgresql://postgres.hytqhapubpatqfkckozk:jXMqqFHHZCpR28ky@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres';
 
 export const pool = new Pool({
   connectionString,
@@ -79,7 +88,19 @@ let isInitialized = false;
 export async function initDb() {
   if (isInitialized) return;
   try {
+    // 1. Create tables
     await pool.query(`
+      CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+      CREATE TABLE IF NOT EXISTS admin_users (
+        id VARCHAR(64) PRIMARY KEY,
+        username VARCHAR(64) UNIQUE NOT NULL,
+        email VARCHAR(255) UNIQUE,
+        password_hash TEXT NOT NULL,
+        role VARCHAR(64) DEFAULT 'admin',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+
       CREATE TABLE IF NOT EXISTS products (
         id VARCHAR(64) PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -143,7 +164,17 @@ export async function initDb() {
       );
     `);
 
-    // Seed products if empty
+    // 2. Seed default admin user if not exists
+    const userRes = await pool.query("SELECT * FROM admin_users WHERE username = 'admin' OR email = 'admin@arsenal.com'");
+    if (userRes.rows.length === 0) {
+      const defaultHash = bcrypt.hashSync('12345', 10);
+      await pool.query(
+        "INSERT INTO admin_users (id, username, email, password_hash, role) VALUES ('usr-admin-1', 'admin', 'admin@arsenal.com', $1, 'Super Administrator')",
+        [defaultHash]
+      );
+    }
+
+    // 3. Seed products if empty
     const pCount = await pool.query('SELECT COUNT(*) FROM products');
     if (parseInt(pCount.rows[0].count) === 0) {
       await pool.query(`
@@ -154,7 +185,7 @@ export async function initDb() {
       `);
     }
 
-    // Seed gallery if empty
+    // 4. Seed gallery if empty
     const gCount = await pool.query('SELECT COUNT(*) FROM gallery');
     if (parseInt(gCount.rows[0].count) === 0) {
       await pool.query(`
@@ -168,7 +199,7 @@ export async function initDb() {
       `);
     }
 
-    // Seed trophies if empty
+    // 5. Seed trophies if empty
     const tCount = await pool.query('SELECT COUNT(*) FROM trophies');
     if (parseInt(tCount.rows[0].count) === 0) {
       await pool.query(`
@@ -182,7 +213,7 @@ export async function initDb() {
       `);
     }
 
-    // Seed timeline if empty
+    // 6. Seed timeline if empty
     const tmCount = await pool.query('SELECT COUNT(*) FROM timeline');
     if (parseInt(tmCount.rows[0].count) === 0) {
       await pool.query(`
@@ -199,6 +230,42 @@ export async function initDb() {
     isInitialized = true;
   } catch (err) {
     console.error('Error initializing PostgreSQL tables:', err);
+  }
+}
+
+// Authentication Service using Supabase PostgreSQL
+export async function authenticateAdminUser(identifier: string, plainPassword: string): Promise<{ success: boolean; user?: AdminUser; error?: string }> {
+  await initDb();
+  try {
+    const res = await pool.query(
+      'SELECT * FROM admin_users WHERE LOWER(username) = LOWER($1) OR LOWER(email) = LOWER($1)',
+      [identifier.trim()]
+    );
+
+    if (res.rows.length === 0) {
+      return { success: false, error: 'Tài khoản không tồn tại trên hệ thống Supabase' };
+    }
+
+    const row = res.rows[0];
+    const isMatch = bcrypt.compareSync(plainPassword, row.password_hash);
+
+    if (!isMatch) {
+      return { success: false, error: 'Mật khẩu không chính xác' };
+    }
+
+    return {
+      success: true,
+      user: {
+        id: row.id,
+        username: row.username,
+        email: row.email,
+        role: row.role,
+        created_at: row.created_at
+      }
+    };
+  } catch (error: any) {
+    console.error('Supabase Auth error:', error);
+    return { success: false, error: 'Lỗi xác thực cơ sở dữ liệu: ' + error.message };
   }
 }
 
