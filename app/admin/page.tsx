@@ -62,7 +62,7 @@ export default function AdminPage() {
   // Authentication state
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authLoading, setAuthLoading] = useState<boolean>(true);
-  const [usernameInput, setUsernameInput] = useState<string>('admin');
+  const [usernameInput, setUsernameInput] = useState<string>('');
   const [passwordInput, setPasswordInput] = useState<string>('');
   const [loginError, setLoginError] = useState<string | null>(null);
 
@@ -375,10 +375,6 @@ export default function AdminPage() {
                 onChange={e => setPasswordInput(e.target.value)}
                 style={{ width: '100%', padding: '12px 14px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 8, color: '#fff', fontSize: 14 }}
               />
-            </div>
-
-            <div style={{ background: 'var(--card-2)', border: '1px dashed var(--line-strong)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: 'var(--gold)' }}>
-              🔑 Tài khoản mặc định: <b>admin</b> / Mật khẩu: <b>12345</b>
             </div>
 
             <button
