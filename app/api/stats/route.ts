@@ -1,19 +1,13 @@
-﻿import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { NextResponse } from 'next/server';
+import { getStats } from '@/lib/db';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const db = getDb();
-  const totalRevenue = db.orders.filter(o => o.status !== 'CANCELLED').reduce((acc, o) => acc + o.total_amount, 0);
-  const pendingOrders = db.orders.filter(o => o.status === 'PENDING').length;
-  return NextResponse.json({
-    success: true,
-    data: {
-      totalRevenue,
-      totalOrders: db.orders.length,
-      pendingOrders,
-      totalProducts: db.products.length,
-      totalGallery: db.gallery.length,
-      totalTrophies: db.trophies.length
-    }
-  });
+  try {
+    const stats = await getStats();
+    return NextResponse.json({ success: true, data: stats });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  }
 }
