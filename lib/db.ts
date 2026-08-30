@@ -88,7 +88,6 @@ let isInitialized = false;
 export async function initDb() {
   if (isInitialized) return;
   try {
-    // 1. Create tables
     await pool.query(`
       CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
@@ -164,7 +163,7 @@ export async function initDb() {
       );
     `);
 
-    // 2. Seed default admin user if not exists
+    // Seed default admin user if not exists
     const userRes = await pool.query("SELECT * FROM admin_users WHERE username = 'admin' OR email = 'admin@arsenal.com'");
     if (userRes.rows.length === 0) {
       const defaultHash = bcrypt.hashSync('12345', 10);
@@ -174,7 +173,7 @@ export async function initDb() {
       );
     }
 
-    // 3. Seed products if empty
+    // Seed products if empty
     const pCount = await pool.query('SELECT COUNT(*) FROM products');
     if (parseInt(pCount.rows[0].count) === 0) {
       await pool.query(`
@@ -185,7 +184,7 @@ export async function initDb() {
       `);
     }
 
-    // 4. Seed gallery if empty
+    // Seed gallery if empty
     const gCount = await pool.query('SELECT COUNT(*) FROM gallery');
     if (parseInt(gCount.rows[0].count) === 0) {
       await pool.query(`
@@ -199,7 +198,7 @@ export async function initDb() {
       `);
     }
 
-    // 5. Seed trophies if empty
+    // Seed trophies if empty
     const tCount = await pool.query('SELECT COUNT(*) FROM trophies');
     if (parseInt(tCount.rows[0].count) === 0) {
       await pool.query(`
@@ -213,7 +212,7 @@ export async function initDb() {
       `);
     }
 
-    // 6. Seed timeline if empty
+    // Seed timeline if empty
     const tmCount = await pool.query('SELECT COUNT(*) FROM timeline');
     if (parseInt(tmCount.rows[0].count) === 0) {
       await pool.query(`
@@ -233,7 +232,7 @@ export async function initDb() {
   }
 }
 
-// Authentication Service using Supabase PostgreSQL
+// Authentication
 export async function authenticateAdminUser(identifier: string, plainPassword: string): Promise<{ success: boolean; user?: AdminUser; error?: string }> {
   await initDb();
   try {
@@ -243,7 +242,7 @@ export async function authenticateAdminUser(identifier: string, plainPassword: s
     );
 
     if (res.rows.length === 0) {
-      return { success: false, error: 'Tài khoản không tồn tại trên hệ thống Supabase' };
+      return { success: false, error: 'Tài khoản không tồn tại trên hệ thống' };
     }
 
     const row = res.rows[0];
@@ -264,9 +263,50 @@ export async function authenticateAdminUser(identifier: string, plainPassword: s
       }
     };
   } catch (error: any) {
-    console.error('Supabase Auth error:', error);
     return { success: false, error: 'Lỗi xác thực cơ sở dữ liệu: ' + error.message };
   }
+}
+
+// Admin Users CRUD
+export async function getAdminUsers(): Promise<AdminUser[]> {
+  await initDb();
+  const res = await pool.query('SELECT id, username, email, role, created_at FROM admin_users ORDER BY created_at ASC');
+  return res.rows;
+}
+
+export async function createAdminUser(userData: { username: string; email: string; password: string; role?: string }): Promise<AdminUser> {
+  await initDb();
+  const id = 'usr-' + Date.now();
+  const hash = bcrypt.hashSync(userData.password, 10);
+  const res = await pool.query(
+    'INSERT INTO admin_users (id, username, email, password_hash, role) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, email, role, created_at',
+    [id, userData.username, userData.email, hash, userData.role || 'Staff']
+  );
+  return res.rows[0];
+}
+
+export async function updateAdminUser(id: string, userData: { email?: string; password?: string; role?: string }): Promise<AdminUser> {
+  await initDb();
+  if (userData.password) {
+    const hash = bcrypt.hashSync(userData.password, 10);
+    const res = await pool.query(
+      'UPDATE admin_users SET email = COALESCE($1, email), password_hash = $2, role = COALESCE($3, role) WHERE id = $4 RETURNING id, username, email, role, created_at',
+      [userData.email, hash, userData.role, id]
+    );
+    return res.rows[0];
+  } else {
+    const res = await pool.query(
+      'UPDATE admin_users SET email = COALESCE($1, email), role = COALESCE($2, role) WHERE id = $3 RETURNING id, username, email, role, created_at',
+      [userData.email, userData.role, id]
+    );
+    return res.rows[0];
+  }
+}
+
+export async function deleteAdminUser(id: string): Promise<boolean> {
+  await initDb();
+  await pool.query('DELETE FROM admin_users WHERE id = $1', [id]);
+  return true;
 }
 
 // Products CRUD
@@ -308,6 +348,26 @@ export async function createProduct(product: Partial<Product>): Promise<Product>
   return { id, ...product } as Product;
 }
 
+export async function updateProduct(id: string, product: Partial<Product>): Promise<Product> {
+  await initDb();
+  await pool.query(
+    'UPDATE products SET name = $1, price = $2, version = $3, tag = $4, description = $5, features = $6, image_url = $7, is_featured = $8, in_stock = $9 WHERE id = $10',
+    [
+      product.name,
+      product.price,
+      product.version,
+      product.tag,
+      product.description,
+      JSON.stringify(product.features || []),
+      product.image_url,
+      product.is_featured,
+      product.in_stock,
+      id
+    ]
+  );
+  return { id, ...product } as Product;
+}
+
 export async function deleteProduct(id: string): Promise<boolean> {
   await initDb();
   await pool.query('DELETE FROM products WHERE id = $1', [id]);
@@ -342,6 +402,23 @@ export async function createGallery(item: Partial<GalleryItem>): Promise<Gallery
       item.category || 'home',
       item.image_url || '/assets/images/arsenal-home.jpg',
       item.display_order || 99
+    ]
+  );
+  return { id, ...item } as GalleryItem;
+}
+
+export async function updateGallery(id: string, item: Partial<GalleryItem>): Promise<GalleryItem> {
+  await initDb();
+  await pool.query(
+    'UPDATE gallery SET title = $1, desc_text = $2, tag = $3, category = $4, image_url = $5, display_order = $6 WHERE id = $7',
+    [
+      item.title,
+      item.desc || '',
+      item.tag || 'CHI TIẾT',
+      item.category || 'home',
+      item.image_url || '/assets/images/arsenal-home.jpg',
+      item.display_order || 99,
+      id
     ]
   );
   return { id, ...item } as GalleryItem;
@@ -388,6 +465,24 @@ export async function createTrophy(trophy: Partial<Trophy>): Promise<Trophy> {
   return { id, ...trophy } as Trophy;
 }
 
+export async function updateTrophy(id: string, trophy: Partial<Trophy>): Promise<Trophy> {
+  await initDb();
+  await pool.query(
+    'UPDATE trophies SET title = $1, count_label = $2, years = $3, desc_text = $4, icon = $5, is_highlight = $6, display_order = $7 WHERE id = $8',
+    [
+      trophy.title,
+      trophy.count_label,
+      trophy.years,
+      trophy.desc || '',
+      trophy.icon || '🏆',
+      trophy.is_highlight || false,
+      trophy.display_order || 99,
+      id
+    ]
+  );
+  return { id, ...trophy } as Trophy;
+}
+
 export async function deleteTrophy(id: string): Promise<boolean> {
   await initDb();
   await pool.query('DELETE FROM trophies WHERE id = $1', [id]);
@@ -420,6 +515,22 @@ export async function createTimeline(event: Partial<TimelineEvent>): Promise<Tim
       event.content || '',
       event.is_highlight || false,
       event.display_order || 99
+    ]
+  );
+  return { id, ...event } as TimelineEvent;
+}
+
+export async function updateTimeline(id: string, event: Partial<TimelineEvent>): Promise<TimelineEvent> {
+  await initDb();
+  await pool.query(
+    'UPDATE timeline SET year_label = $1, title = $2, content = $3, is_highlight = $4, display_order = $5 WHERE id = $6',
+    [
+      event.year_label,
+      event.title,
+      event.content || '',
+      event.is_highlight || false,
+      event.display_order || 99,
+      id
     ]
   );
   return { id, ...event } as TimelineEvent;
@@ -488,6 +599,23 @@ export async function createOrder(order: Partial<Order>): Promise<Order> {
   };
 }
 
+export async function updateOrder(id: string, orderData: Partial<Order>): Promise<boolean> {
+  await initDb();
+  await pool.query(
+    'UPDATE orders SET fullname = COALESCE($1, fullname), phone = COALESCE($2, phone), address = COALESCE($3, address), status = COALESCE($4, status), custom_name = COALESCE($5, custom_name), custom_number = COALESCE($6, custom_number) WHERE id = $7',
+    [
+      orderData.fullname,
+      orderData.phone,
+      orderData.address,
+      orderData.status,
+      orderData.custom_name,
+      orderData.custom_number,
+      id
+    ]
+  );
+  return true;
+}
+
 export async function updateOrderStatus(id: string, status: string): Promise<boolean> {
   await initDb();
   await pool.query('UPDATE orders SET status = $1 WHERE id = $2', [status, id]);
@@ -508,6 +636,7 @@ export async function getStats() {
   const pCount = await pool.query('SELECT COUNT(*) as total_products FROM products');
   const gCount = await pool.query('SELECT COUNT(*) as total_gallery FROM gallery');
   const tCount = await pool.query('SELECT COUNT(*) as total_trophies FROM trophies');
+  const uCount = await pool.query('SELECT COUNT(*) as total_users FROM admin_users');
 
   return {
     total_revenue: Number(revRes.rows[0].total_revenue),
@@ -515,6 +644,7 @@ export async function getStats() {
     pending_orders: parseInt(pendRes.rows[0].pending_orders),
     total_products: parseInt(pCount.rows[0].total_products),
     total_gallery: parseInt(gCount.rows[0].total_gallery),
-    total_trophies: parseInt(tCount.rows[0].total_trophies)
+    total_trophies: parseInt(tCount.rows[0].total_trophies),
+    total_users: parseInt(uCount.rows[0].total_users)
   };
 }

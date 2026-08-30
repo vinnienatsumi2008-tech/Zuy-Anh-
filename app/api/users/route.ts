@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import { getProducts, createProduct, updateProduct, deleteProduct } from '@/lib/db';
+import { getAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const products = await getProducts();
-    return NextResponse.json({ success: true, data: products });
+    const users = await getAdminUsers();
+    return NextResponse.json({ success: true, data: users });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
@@ -15,8 +15,12 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const newProd = await createProduct(body);
-    return NextResponse.json({ success: true, data: newProd });
+    const { username, email, password, role } = body;
+    if (!username || !password) {
+      return NextResponse.json({ success: false, error: 'Thiếu tên đăng nhập hoặc mật khẩu' }, { status: 400 });
+    }
+    const newUser = await createAdminUser({ username, email: email || `${username}@arsenal.com`, password, role: role || 'Staff' });
+    return NextResponse.json({ success: true, data: newUser });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
@@ -25,9 +29,9 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const { id, ...data } = body;
+    const { id, email, password, role } = body;
     if (!id) return NextResponse.json({ success: false, error: 'Thiếu mã ID' }, { status: 400 });
-    const updated = await updateProduct(id, data);
+    const updated = await updateAdminUser(id, { email, password, role });
     return NextResponse.json({ success: true, data: updated });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
@@ -39,7 +43,7 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ success: false, error: 'Thiếu mã ID' }, { status: 400 });
-    await deleteProduct(id);
+    await deleteAdminUser(id);
     return NextResponse.json({ success: true });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
