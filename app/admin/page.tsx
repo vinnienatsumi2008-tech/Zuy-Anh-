@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 interface Order {
@@ -77,6 +77,12 @@ export default function AdminPage() {
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [stats, setStats] = useState<any>(null);
   
+  // Upload States
+  const [isUploadingProductImg, setIsUploadingProductImg] = useState<boolean>(false);
+  const [isUploadingGalleryImg, setIsUploadingGalleryImg] = useState<boolean>(false);
+  const productFileInputRef = useRef<HTMLInputElement>(null);
+  const galleryFileInputRef = useRef<HTMLInputElement>(null);
+
   // Toast notification
   const [toast, setToast] = useState<{ message: string; type: 'info' | 'success' | 'danger' } | null>(null);
 
@@ -86,7 +92,6 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    // Check saved session
     try {
       const savedAuth = sessionStorage.getItem('arsenal_admin_logged');
       if (savedAuth === 'true') {
@@ -142,11 +147,46 @@ export default function AdminPage() {
   const handleLogout = () => {
     sessionStorage.removeItem('arsenal_admin_logged');
     setIsAuthenticated(false);
+    setUsernameInput('');
     setPasswordInput('');
     showToast('Đã đăng xuất khỏi hệ thống quản trị', 'info');
   };
 
-  // Handlers for Orders
+  // Generic Image Upload Handler
+  const handleUploadImageFile = async (file: File, target: 'product' | 'gallery') => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+
+    if (target === 'product') setIsUploadingProductImg(true);
+    if (target === 'gallery') setIsUploadingGalleryImg(true);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        if (target === 'product') {
+          setNewProduct(prev => ({ ...prev, image_url: data.url }));
+          showToast('Đã tải và lưu hình ảnh sản phẩm thành công!', 'success');
+        } else {
+          setNewGallery(prev => ({ ...prev, image_url: data.url }));
+          showToast('Đã tải và lưu hình ảnh thư viện thành công!', 'success');
+        }
+      } else {
+        showToast('Lỗi tải ảnh: ' + (data.error || 'Vui lòng thử lại'), 'danger');
+      }
+    } catch (e) {
+      showToast('Lỗi kết nối khi tải ảnh lên máy chủ', 'danger');
+    } finally {
+      if (target === 'product') setIsUploadingProductImg(false);
+      if (target === 'gallery') setIsUploadingGalleryImg(false);
+    }
+  };
+
+  // Orders Handlers
   const handleUpdateOrderStatus = async (id: string, newStatus: string) => {
     try {
       const res = await fetch('/api/orders', {
@@ -180,9 +220,16 @@ export default function AdminPage() {
     }
   };
 
-  // Handlers for Products
+  // Products State & Handlers
   const [newProduct, setNewProduct] = useState({
-    name: '', price: 890000, version: 'Home', tag: 'MỚI', description: '', features: 'Vải thi đấu chuẩn cầu thủ, Thêu tên số miễn phí', image_url: '/assets/images/arsenal-home.jpg', is_featured: false
+    name: '',
+    price: 890000,
+    version: 'Home',
+    tag: 'Bản Mới',
+    description: 'Áo đấu chính hãng bảo chứng chất lượng, giao hàng 1-3 ngày toàn quốc.',
+    features: '1 áo chính hãng, Bảo chứng Adidas 100%, Miễn phí thêu tên số, Đổi size 30 ngày',
+    image_url: '/assets/images/arsenal-home.jpg',
+    is_featured: false
   });
 
   const handleAddProduct = async (e: React.FormEvent) => {
@@ -198,8 +245,17 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Thêm sản phẩm thành công vào Supabase', 'success');
-        setNewProduct({ name: '', price: 890000, version: 'Home', tag: 'MỚI', description: '', features: 'Vải thi đấu, Thêu tên số', image_url: '/assets/images/arsenal-home.jpg', is_featured: false });
+        showToast('Đã thêm sản phẩm và lưu trữ hình ảnh vào Supabase!', 'success');
+        setNewProduct({
+          name: '',
+          price: 890000,
+          version: 'Home',
+          tag: 'Bản Mới',
+          description: 'Áo đấu chính hãng bảo chứng chất lượng, giao hàng 1-3 ngày toàn quốc.',
+          features: '1 áo chính hãng, Bảo chứng Adidas 100%, Miễn phí thêu tên số, Đổi size 30 ngày',
+          image_url: '/assets/images/arsenal-home.jpg',
+          is_featured: false
+        });
         loadAllData();
       }
     } catch (e) {
@@ -218,9 +274,13 @@ export default function AdminPage() {
     }
   };
 
-  // Handlers for Gallery
+  // Gallery State & Handlers
   const [newGallery, setNewGallery] = useState({
-    title: '', desc: '', tag: 'CHI TIẾT', category: 'home', image_url: '/assets/images/arsenal-home.jpg'
+    title: '',
+    desc: 'Hình ảnh chi tiết sắc nét chuẩn bộ sưu tập Arsenal 1886.',
+    tag: 'ẢNH CHI TIẾT',
+    category: 'home',
+    image_url: '/assets/images/arsenal-home.jpg'
   });
 
   const handleAddGallery = async (e: React.FormEvent) => {
@@ -233,8 +293,14 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Thêm ảnh thư viện thành công vào Supabase', 'success');
-        setNewGallery({ title: '', desc: '', tag: 'CHI TIẾT', category: 'home', image_url: '/assets/images/arsenal-home.jpg' });
+        showToast('Đã thêm ảnh vào Thư viện Supabase!', 'success');
+        setNewGallery({
+          title: '',
+          desc: 'Hình ảnh chi tiết sắc nét chuẩn bộ sưu tập Arsenal 1886.',
+          tag: 'ẢNH CHI TIẾT',
+          category: 'home',
+          image_url: '/assets/images/arsenal-home.jpg'
+        });
         loadAllData();
       }
     } catch (e) {
@@ -253,7 +319,7 @@ export default function AdminPage() {
     }
   };
 
-  // Handlers for Trophies
+  // Trophies Handlers
   const [newTrophy, setNewTrophy] = useState({
     title: '', count_label: '18x', years: '1930, 1931...', desc: '', icon: '🛡️', is_highlight: false
   });
@@ -288,7 +354,7 @@ export default function AdminPage() {
     }
   };
 
-  // Handlers for Timeline
+  // Timeline Handlers
   const [newTimeline, setNewTimeline] = useState({
     year_label: '1886', title: '', content: '', is_highlight: false
   });
@@ -346,7 +412,7 @@ export default function AdminPage() {
           <h2 style={{ fontFamily: 'Big Shoulders Display', fontSize: 28, fontWeight: 900, color: 'var(--gold)', letterSpacing: '0.05em', marginBottom: 6 }}>
             QUẢN TRỊ ARSENAL 1886
           </h2>
-          <p style={{ color: 'var(--mute)', fontSize: 13.5, marginBottom: 24 }}>Vui lòng xác thực tài khoản quản trị để truy cập dữ liệu Supabase.</p>
+          <p style={{ color: 'var(--mute)', fontSize: 13.5, marginBottom: 24 }}>Vui lòng xác thực tài khoản quản trị để truy cập hệ thống.</p>
 
           {loginError && (
             <div style={{ background: 'var(--red-dim)', border: '1px solid var(--red)', color: '#ff6b81', padding: '10px 14px', borderRadius: 8, fontSize: 13, fontWeight: 700, marginBottom: 18, textAlign: 'left' }}>
@@ -360,6 +426,7 @@ export default function AdminPage() {
               <input
                 required
                 type="text"
+                placeholder="Nhập tên tài khoản..."
                 value={usernameInput}
                 onChange={e => setUsernameInput(e.target.value)}
                 style={{ width: '100%', padding: '12px 14px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 8, color: '#fff', fontSize: 14 }}
@@ -380,7 +447,7 @@ export default function AdminPage() {
             <button
               type="submit"
               style={{
-                marginTop: 6, background: 'var(--red)', color: '#fff', padding: '14px',
+                marginTop: 8, background: 'var(--red)', color: '#fff', padding: '14px',
                 borderRadius: 8, fontWeight: 800, fontSize: 15, cursor: 'pointer', border: 'none'
               }}
             >
@@ -398,7 +465,7 @@ export default function AdminPage() {
     );
   }
 
-  // AUTHENTICATED ADMIN DASHBOARD
+  // AUTHENTICATED DASHBOARD
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', padding: '30px 24px' }}>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
@@ -417,7 +484,7 @@ export default function AdminPage() {
                 </span>
               </div>
               <div style={{ fontFamily: 'JetBrains Mono', fontSize: 11, color: 'var(--mute)', marginTop: 2 }}>
-                Đang đăng nhập với tư cách: <b style={{ color: 'var(--cream)' }}>admin</b> (Super Administrator)
+                Đang đăng nhập: <b style={{ color: 'var(--cream)' }}>admin</b> (Super Administrator) · Hỗ trợ tải & lưu trữ ảnh trực tiếp
               </div>
             </div>
           </div>
@@ -477,7 +544,7 @@ export default function AdminPage() {
         <div style={{ display: 'flex', gap: 10, borderBottom: '1px solid var(--line)', paddingBottom: 14, marginBottom: 28, flexWrap: 'wrap' }}>
           {[
             { id: 'orders', label: `📦 Đơn Hàng (${orders.length})` },
-            { id: 'products', label: `👕 Sản Phẩm (${products.length})` },
+            { id: 'products', label: `👕 Sản Phẩm & Ảnh (${products.length})` },
             { id: 'gallery', label: `🖼️ Thư Viện Ảnh (${gallery.length})` },
             { id: 'trophies', label: `🏆 Cúp & Danh Hiệu (${trophies.length})` },
             { id: 'timeline', label: `⏳ Lịch Sử (${timeline.length})` },
@@ -590,18 +657,21 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* TAB 2: PRODUCTS CRUD */}
+        {/* TAB 2: PRODUCTS CRUD & IMAGE STORAGE */}
         {activeTab === 'products' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 24 }}>
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Danh Sách Sản Phẩm Trong DB</h3>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Danh Sách Sản Phẩm & Hình Ảnh Trong DB</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {products.map((prod, idx) => (
-                  <div key={prod.id || idx} style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 10, padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontWeight: 800, color: 'var(--cream)', fontSize: 16 }}>{prod.name}</div>
-                      <div style={{ color: 'var(--gold)', fontSize: 14, fontWeight: 700 }}>{Number(prod.price).toLocaleString('vi-VN')}đ · {prod.version}</div>
-                      <div style={{ color: 'var(--mute)', fontSize: 12 }}>Tag: {prod.tag} | Còn hàng: {prod.in_stock ? 'Có' : 'Hết'}</div>
+                  <div key={prod.id || idx} style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 10, padding: 14, display: 'flex', gap: 14, alignItems: 'center' }}>
+                    <div style={{ width: 72, height: 72, background: '#0e1014', borderRadius: 8, padding: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--line)' }}>
+                      <img src={prod.image_url} alt={prod.name} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 800, color: 'var(--cream)', fontSize: 15 }}>{prod.name}</div>
+                      <div style={{ color: 'var(--gold)', fontSize: 14, fontWeight: 700 }}>{Number(prod.price).toLocaleString('vi-VN')}đ · <span style={{ color: 'var(--mute)', fontSize: 12 }}>{prod.version}</span></div>
+                      <div style={{ color: 'var(--mute)', fontSize: 11.5 }}>Tag: {prod.tag} | Còn hàng: {prod.in_stock ? 'Có' : 'Hết'}</div>
                     </div>
                     <button
                       onClick={() => handleDeleteProduct(prod.id)}
@@ -614,15 +684,55 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Add Product Form */}
+            {/* Add Product Form With Image Upload */}
             <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: 24 }}>
-              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Sản Phẩm Mới Vào Supabase</h4>
+              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Sản Phẩm & Tải Hình Ảnh Lên</h4>
+              
+              {/* IMAGE UPLOAD BOX FOR PRODUCT */}
+              <div style={{ background: 'var(--card-2)', border: '1px dashed var(--gold)', borderRadius: 10, padding: 16, marginBottom: 16, textAlign: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 10 }}>
+                  <div style={{ width: 80, height: 80, background: '#090a0c', border: '1px solid var(--line)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    <img src={newProduct.image_url} alt="Preview" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                  </div>
+                  <div style={{ textAlign: 'left', flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cream)' }}>Lưu Trữ Hình Ảnh Sản Phẩm</div>
+                    <div style={{ fontSize: 11.5, color: 'var(--mute)', marginBottom: 8 }}>Hỗ trợ JPG, PNG, WEBP lưu trực tiếp vào máy chủ</div>
+                    <input
+                      type="file"
+                      ref={productFileInputRef}
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={e => {
+                        if (e.target.files && e.target.files[0]) {
+                          handleUploadImageFile(e.target.files[0], 'product');
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      disabled={isUploadingProductImg}
+                      onClick={() => productFileInputRef.current?.click()}
+                      style={{
+                        background: 'var(--gold)', color: '#000', padding: '6px 14px', borderRadius: 6,
+                        fontWeight: 800, fontSize: 12, cursor: isUploadingProductImg ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      {isUploadingProductImg ? '⏳ Đang tải ảnh...' : '📁 Chọn ảnh từ máy tính'}
+                    </button>
+                  </div>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--mute-2)', wordBreak: 'break-all' }}>
+                  URL lưu trữ: <b style={{ color: 'var(--gold)' }}>{newProduct.image_url}</b>
+                </div>
+              </div>
+
               <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div>
                   <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tên sản phẩm *</label>
                   <input
                     required
                     type="text"
+                    placeholder="VD: Áo Đấu Arsenal Home 1886 Bản Player"
                     value={newProduct.name}
                     onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
                     style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
@@ -653,6 +763,27 @@ export default function AdminPage() {
                     </select>
                   </div>
                 </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  <div>
+                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tag nhãn</label>
+                    <input
+                      type="text"
+                      placeholder="VD: Bán Chạy Nhất"
+                      value={newProduct.tag}
+                      onChange={e => setNewProduct({ ...newProduct, tag: e.target.value })}
+                      style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tùy chỉnh URL ảnh (Tùy chọn)</label>
+                    <input
+                      type="text"
+                      value={newProduct.image_url}
+                      onChange={e => setNewProduct({ ...newProduct, image_url: e.target.value })}
+                      style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
+                    />
+                  </div>
+                </div>
                 <div>
                   <label style={{ fontSize: 12, color: 'var(--mute)' }}>Mô tả ngắn</label>
                   <textarea
@@ -666,24 +797,24 @@ export default function AdminPage() {
                   type="submit"
                   style={{ background: 'var(--gold)', color: '#000', padding: '12px', borderRadius: 8, fontWeight: 800, cursor: 'pointer', marginTop: 8 }}
                 >
-                  Lưu Sản Phẩm Vào Supabase
+                  Lưu Sản Phẩm & Ảnh Vào Supabase
                 </button>
               </form>
             </div>
           </div>
         )}
 
-        {/* TAB 3: GALLERY CRUD */}
+        {/* TAB 3: GALLERY CRUD & IMAGE STORAGE */}
         {activeTab === 'gallery' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 24 }}>
             <div>
               <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Thư Viện Ảnh (Realtime Supabase)</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 {gallery.map((g, idx) => (
                   <div key={g.id || idx} style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 8, padding: 12, position: 'relative' }}>
-                    <img src={g.image_url} alt={g.title} style={{ width: '100%', height: 100, objectFit: 'contain', background: '#0e1014', borderRadius: 4, marginBottom: 8 }} />
+                    <img src={g.image_url} alt={g.title} style={{ width: '100%', height: 110, objectFit: 'contain', background: '#0e1014', borderRadius: 4, marginBottom: 8 }} />
                     <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--cream)' }}>{g.title}</div>
-                    <div style={{ color: 'var(--gold)', fontSize: 11 }}>{g.category}</div>
+                    <div style={{ color: 'var(--gold)', fontSize: 11 }}>{g.category} · {g.tag}</div>
                     <button
                       onClick={() => handleDeleteGallery(g.id)}
                       style={{ position: 'absolute', top: 6, right: 6, color: 'var(--red)', background: 'rgba(0,0,0,0.7)', border: 'none', borderRadius: 4, padding: '2px 6px', fontSize: 11, cursor: 'pointer' }}
@@ -695,27 +826,57 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Add Gallery Form */}
+            {/* Add Gallery Form with Upload */}
             <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: 24 }}>
-              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Ảnh Mới Vào Supabase</h4>
+              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Ảnh Mới Vào Thư Viện</h4>
+              
+              {/* IMAGE UPLOAD BOX FOR GALLERY */}
+              <div style={{ background: 'var(--card-2)', border: '1px dashed var(--gold)', borderRadius: 10, padding: 16, marginBottom: 16, textAlign: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 10 }}>
+                  <div style={{ width: 80, height: 80, background: '#090a0c', border: '1px solid var(--line)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    <img src={newGallery.image_url} alt="Preview" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                  </div>
+                  <div style={{ textAlign: 'left', flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cream)' }}>Tải Tệp Ảnh Mới</div>
+                    <div style={{ fontSize: 11.5, color: 'var(--mute)', marginBottom: 8 }}>Lưu trữ hình ảnh vào thư mục máy chủ công khai</div>
+                    <input
+                      type="file"
+                      ref={galleryFileInputRef}
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={e => {
+                        if (e.target.files && e.target.files[0]) {
+                          handleUploadImageFile(e.target.files[0], 'gallery');
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      disabled={isUploadingGalleryImg}
+                      onClick={() => galleryFileInputRef.current?.click()}
+                      style={{
+                        background: 'var(--gold)', color: '#000', padding: '6px 14px', borderRadius: 6,
+                        fontWeight: 800, fontSize: 12, cursor: isUploadingGalleryImg ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      {isUploadingGalleryImg ? '⏳ Đang tải ảnh...' : '📁 Tải ảnh từ máy tính'}
+                    </button>
+                  </div>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--mute-2)', wordBreak: 'break-all' }}>
+                  URL lưu trữ: <b style={{ color: 'var(--gold)' }}>{newGallery.image_url}</b>
+                </div>
+              </div>
+
               <form onSubmit={handleAddGallery} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div>
                   <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tiêu đề ảnh *</label>
                   <input
                     required
                     type="text"
+                    placeholder="VD: Cận cảnh đường may cổ áo đấu 1886"
                     value={newGallery.title}
                     onChange={e => setNewGallery({ ...newGallery, title: e.target.value })}
-                    style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Đường dẫn ảnh (URL hoặc /assets/images/*) *</label>
-                  <input
-                    required
-                    type="text"
-                    value={newGallery.image_url}
-                    onChange={e => setNewGallery({ ...newGallery, image_url: e.target.value })}
                     style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
                   />
                 </div>
@@ -758,7 +919,7 @@ export default function AdminPage() {
                   type="submit"
                   style={{ background: 'var(--gold)', color: '#000', padding: '12px', borderRadius: 8, fontWeight: 800, cursor: 'pointer', marginTop: 8 }}
                 >
-                  Lưu Ảnh Vào Supabase
+                  Lưu Ảnh Vào Thư Viện Supabase
                 </button>
               </form>
             </div>
