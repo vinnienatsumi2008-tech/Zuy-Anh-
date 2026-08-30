@@ -13,15 +13,20 @@
     --bg-1:#101215;
     --card:#15171b;
     --card-2:#1a1d22;
+    --card-hover:#20242b;
     --line:rgba(255,255,255,.08);
     --line-strong:rgba(255,255,255,.14);
     --red:#d81e3d;
+    --red-hover:#ef2947;
     --red-dim:#8c1428;
+    --red-glow:rgba(216,30,61,.28);
     --gold:#e8c468;
+    --gold-dim:rgba(232,196,104,.15);
     --cream:#f1ede4;
     --text:#ece9e2;
     --mute:#8b8d93;
     --mute-2:#5f6167;
+    --success:#22c55e;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
@@ -57,13 +62,13 @@
   /* ---------- NAV ---------- */
   nav{
     position:fixed;top:0;left:0;right:0;z-index:1000;
-    padding:22px 0;
+    padding:20px 0;
     transition:all .35s ease;
     border-bottom:1px solid transparent;
   }
   nav.scrolled{
-    padding:14px 0;
-    background:rgba(10,11,13,.86);
+    padding:12px 0;
+    background:rgba(10,11,13,.88);
     backdrop-filter:blur(14px);
     -webkit-backdrop-filter:blur(14px);
     border-bottom:1px solid var(--line);
@@ -72,17 +77,39 @@
   .brand{display:flex;align-items:center;gap:10px;font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:22px;letter-spacing:.02em;text-transform:uppercase;}
   .brand-mark{width:34px;height:34px;border:1.5px solid var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--red);flex-shrink:0;}
   .brand small{display:block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--mute);text-transform:uppercase;font-weight:400;margin-top:2px;}
-  .nav-links{display:flex;gap:38px;font-size:14px;font-weight:500;color:var(--mute);}
+  .nav-links{display:flex;gap:32px;font-size:14px;font-weight:500;color:var(--mute);}
   .nav-links a{transition:color .2s;position:relative;}
   .nav-links a:hover{color:var(--text);}
+  
+  .nav-right-actions{display:flex;align-items:center;gap:12px;}
+  .nav-cart-btn{
+    position:relative;
+    display:flex;align-items:center;gap:8px;
+    padding:9px 16px;
+    background:var(--card);
+    border:1px solid var(--line-strong);
+    border-radius:4px;
+    font-size:13px;font-weight:600;
+    color:var(--text);
+    cursor:pointer;
+    transition:all .2s;
+  }
+  .nav-cart-btn:hover{border-color:var(--gold);color:var(--gold);}
+  .cart-badge{
+    background:var(--red);color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;font-weight:700;
+    min-width:18px;height:18px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:0 5px;
+  }
   .nav-cta{
-    background:var(--red);color:#fff;padding:11px 24px;border-radius:3px;
+    background:var(--red);color:#fff;padding:10px 22px;border-radius:3px;
     font-size:13px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;
     transition:transform .2s, background .2s;
   }
-  .nav-cta:hover{background:#ef2947;transform:translateY(-1px);}
-  .nav-mobile-hide{display:flex;}
-  @media(max-width:860px){.nav-links{display:none;}}
+  .nav-cta:hover{background:var(--red-hover);transform:translateY(-1px);}
+  @media(max-width:890px){.nav-links{display:none;}}
 
   /* ---------- HERO ---------- */
   .hero{
@@ -228,27 +255,123 @@
     background:linear-gradient(155deg,#16181c,#0d0e10);
     border:1px solid var(--line);position:relative;overflow:hidden;
     display:flex;align-items:center;justify-content:center;
+    box-shadow:0 20px 40px rgba(0,0,0,.6);
   }
   .jersey-frame::before{
     content:'';position:absolute;inset:0;
-    background:radial-gradient(circle at 30% 20%, rgba(216,30,61,.18), transparent 55%);
+    background:radial-gradient(circle at 30% 20%, rgba(216,30,61,.22), transparent 55%);
   }
-  .jersey-svg{width:56%;position:relative;z-index:1;filter:drop-shadow(0 30px 50px rgba(0,0,0,.5));}
+  .jersey-svg{width:58%;position:relative;z-index:1;filter:drop-shadow(0 30px 50px rgba(0,0,0,.6));transition:transform .3s ease;}
+  .jersey-img{
+    max-width:80%;
+    max-height:82%;
+    object-fit:contain;
+    position:relative;
+    z-index:1;
+    filter:drop-shadow(0 25px 45px rgba(0,0,0,.75));
+    transition:transform .3s ease, opacity .3s ease;
+    border-radius:8px;
+  }
+  .jersey-frame:hover .jersey-svg, .jersey-frame:hover .jersey-img{transform:scale(1.04);}
+  .jersey-toggle{
+    position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:3;
+    display:flex;gap:8px;background:rgba(10,11,13,.85);padding:6px;border-radius:30px;border:1px solid var(--line-strong);
+  }
+  .jersey-toggle button{
+    padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;color:var(--mute);
+    transition:all .2s;cursor:pointer;
+  }
+  .jersey-toggle button.active{background:var(--red);color:#fff;}
   .spec-list{list-style:none;}
   .spec-list li{
     display:flex;justify-content:space-between;align-items:baseline;
-    padding:20px 0;border-bottom:1px solid var(--line);
+    padding:18px 0;border-bottom:1px solid var(--line);
   }
   .spec-list li:first-child{padding-top:0;}
   .spec-list .k{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute-2);}
-  .spec-list .v{font-size:17px;font-weight:600;color:var(--cream);text-align:right;}
-  .size-row{display:flex;gap:8px;margin-top:30px;flex-wrap:wrap;}
+  .spec-list .v{font-size:16.5px;font-weight:600;color:var(--cream);text-align:right;}
+  .size-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
   .size-chip{
-    width:44px;height:44px;border:1px solid var(--line-strong);border-radius:6px;
+    width:46px;height:46px;border:1px solid var(--line-strong);border-radius:6px;
     display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;
-    font-size:13px;color:var(--mute);cursor:default;transition:all .2s;
+    font-size:14px;color:var(--mute);cursor:pointer;transition:all .2s;
   }
   .size-chip:hover{border-color:var(--gold);color:var(--gold);}
+  .size-chip.active{border-color:var(--red);background:var(--red-dim);color:#fff;font-weight:700;}
+
+  /* ---------- GALLERY SECTION ---------- */
+  .gallery-section{
+    background:var(--bg);
+  }
+  .gallery-filters{
+    display:flex;gap:10px;flex-wrap:wrap;margin-bottom:34px;
+  }
+  .g-filter-btn{
+    padding:8px 18px;border-radius:20px;
+    border:1px solid var(--line-strong);background:var(--card);
+    font-size:13px;font-weight:600;color:var(--mute);cursor:pointer;
+    transition:all .2s;
+  }
+  .g-filter-btn:hover{color:var(--text);border-color:var(--gold);}
+  .g-filter-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+
+  .gallery-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+  }
+  @media(max-width:960px){.gallery-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:600px){.gallery-grid{grid-template-columns:1fr;}}
+
+  .gallery-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:transform .3s, border-color .3s, box-shadow .3s;
+    position:relative;
+    display:flex;flex-direction:column;
+  }
+  .gallery-card:hover{
+    transform:translateY(-6px);
+    border-color:rgba(232,196,104,.4);
+    box-shadow:0 18px 36px rgba(0,0,0,.5);
+  }
+  .gallery-visual{
+    height:220px;
+    background:linear-gradient(145deg,#1c1e24,#111317);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;
+  }
+  .gallery-visual img{
+    max-height:88%;
+    max-width:88%;
+    object-fit:contain;
+    transition:transform .35s ease;
+    filter:drop-shadow(0 10px 20px rgba(0,0,0,.6));
+  }
+  .gallery-card:hover .gallery-visual img{transform:scale(1.08);}
+  .gallery-visual::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at center, rgba(232,196,104,.08), transparent 70%);
+  }
+  .gallery-overlay{
+    position:absolute;inset:0;background:rgba(10,11,13,.7);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:opacity .25s ease;
+  }
+  .gallery-card:hover .gallery-overlay{opacity:1;}
+  .gallery-overlay span{
+    background:var(--red);color:#fff;
+    padding:8px 18px;border-radius:20px;
+    font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  }
+  .gallery-info{padding:20px 22px;}
+  .gallery-info .g-tag{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;
+    color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;
+  }
+  .gallery-info h4{font-size:18px;color:var(--cream);font-weight:700;margin-bottom:8px;text-transform:none;}
+  .gallery-info p{font-size:13.5px;color:var(--mute);line-height:1.5;}
 
   /* ---------- PRICING ---------- */
   .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
@@ -280,22 +403,28 @@
   .price-feats li svg{width:16px;height:16px;stroke:var(--gold);flex-shrink:0;margin-top:3px;}
   .price-feats li.off{color:var(--mute-2);}
   .price-feats li.off svg{stroke:var(--mute-2);}
+  .price-btn-group{display:flex;gap:8px;}
   .price-btn{
-    text-align:center;padding:14px;border-radius:4px;font-weight:700;font-size:14px;
+    flex:1;text-align:center;padding:14px;border-radius:4px;font-weight:700;font-size:14px;
     text-transform:uppercase;letter-spacing:.02em;border:1px solid var(--line-strong);
-    transition:all .2s;
+    transition:all .2s;display:inline-block;cursor:pointer;
   }
-  .price-card.feat .price-btn{background:var(--red);border-color:var(--red);color:#fff;}
+  .price-btn.btn-cart{
+    flex:0 0 48px;padding:0;display:flex;align-items:center;justify-content:center;
+    background:var(--bg-1);
+  }
+  .price-btn.btn-cart svg{width:18px;height:18px;stroke:var(--cream);}
+  .price-card.feat .price-btn:not(.btn-cart){background:var(--red);border-color:var(--red);color:#fff;}
   .price-btn:hover{border-color:var(--gold);color:var(--gold);}
-  .price-card.feat .price-btn:hover{background:#ef2947;color:#fff;border-color:#ef2947;}
+  .price-card.feat .price-btn:not(.btn-cart):hover{background:var(--red-hover);color:#fff;border-color:var(--red-hover);}
+  .btn-cart:hover svg{stroke:var(--gold);}
 
   /* ---------- TESTIMONIALS ---------- */
   .test-strip{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:70px 0;}
   .test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
   @media(max-width:860px){.test-grid{grid-template-columns:1fr;}}
   .test-card{background:var(--bg);padding:38px;}
-  .stars{display:flex;gap:3px;margin-bottom:18px;}
-  .stars svg{width:14px;height:14px;fill:var(--gold);}
+  .stars{display:flex;gap:3px;margin-bottom:18px;color:var(--gold);}
   .test-card p{font-size:15.5px;line-height:1.7;color:var(--text);margin-bottom:22px;}
   .test-who{display:flex;align-items:center;gap:12px;}
   .test-who .av{width:38px;height:38px;border-radius:50%;background:var(--red-dim);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--cream);}
@@ -351,6 +480,371 @@
 
   .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease;}
   .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ---------- CART DRAWER (GIỎ HÀNG POPUP) ---------- */
+  .cart-drawer-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.65);
+    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    z-index:2000;opacity:0;visibility:hidden;
+    transition:opacity .3s ease, visibility .3s ease;
+  }
+  .cart-drawer-overlay.active{opacity:1;visibility:visible;}
+  .cart-drawer{
+    position:fixed;top:0;right:0;bottom:0;width:100%;max-width:440px;
+    background:var(--bg-1);border-left:1px solid var(--line-strong);
+    z-index:2001;display:flex;flex-direction:column;
+    transform:translateX(100%);transition:transform .35s cubic-bezier(.16,1,.3,1);
+    box-shadow:-10px 0 40px rgba(0,0,0,.8);
+  }
+  .cart-drawer-overlay.active .cart-drawer{transform:translateX(0);}
+  
+  .cart-head{
+    padding:22px 24px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .cart-head h3{font-size:20px;color:var(--cream);font-weight:700;}
+  .cart-close-btn{
+    width:32px;height:32px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;color:var(--mute);background:var(--card);
+    transition:all .2s;cursor:pointer;
+  }
+  .cart-close-btn:hover{color:#fff;background:var(--red);}
+
+  .cart-body{
+    flex:1;overflow-y:auto;padding:24px;
+    display:flex;flex-direction:column;gap:16px;
+  }
+  .cart-empty{
+    text-align:center;padding:60px 20px;margin:auto;
+    color:var(--mute);
+  }
+  .cart-empty svg{width:56px;height:56px;stroke:var(--mute-2);margin-bottom:14px;}
+  .cart-empty p{font-size:15px;margin-bottom:20px;}
+
+  .cart-item{
+    display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;
+    background:var(--card);padding:14px;border-radius:8px;border:1px solid var(--line);
+  }
+  .cart-item-img{
+    width:64px;height:64px;background:var(--bg);border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .cart-item-img svg{width:40px;height:40px;}
+  .cart-item-title{font-size:14.5px;font-weight:700;color:var(--cream);margin-bottom:4px;}
+  .cart-item-meta{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mute);margin-bottom:6px;}
+  .cart-item-price{font-family:'Big Shoulders Display',sans-serif;font-size:18px;font-weight:700;color:var(--gold);}
+  
+  .cart-item-qty{
+    display:flex;align-items:center;gap:6px;background:var(--bg-1);
+    border:1px solid var(--line);border-radius:4px;padding:2px;
+  }
+  .cart-item-qty button{
+    width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+    font-size:13px;color:var(--mute);cursor:pointer;transition:color .2s;
+  }
+  .cart-item-qty button:hover{color:#fff;}
+  .cart-item-qty span{
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;min-width:18px;text-align:center;
+  }
+  .cart-item-del{
+    color:var(--mute-2);font-size:12px;padding:4px;margin-top:6px;text-align:right;cursor:pointer;
+    transition:color .2s;
+  }
+  .cart-item-del:hover{color:var(--red);}
+
+  .cart-foot{
+    padding:24px;border-top:1px solid var(--line);
+    background:var(--card);
+  }
+  .cart-summary-line{
+    display:flex;justify-content:space-between;font-size:14px;color:var(--mute);margin-bottom:10px;
+  }
+  .cart-summary-total{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:16px;color:var(--cream);font-weight:700;padding-top:10px;
+    border-top:1px dashed var(--line-strong);margin-bottom:20px;
+  }
+  .cart-summary-total .total-num{
+    font-family:'Big Shoulders Display',sans-serif;font-size:28px;color:var(--gold);
+  }
+  .cart-checkout-btn{
+    width:100%;background:var(--red);color:#fff;padding:15px;border-radius:4px;
+    font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.04em;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    cursor:pointer;transition:all .2s;
+  }
+  .cart-checkout-btn:hover{background:var(--red-hover);box-shadow:0 8px 24px -6px rgba(216,30,61,.6);}
+
+  /* ---------- ORDER MODAL (MODAL ĐẶT HÀNG) ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.75);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    z-index:3000;opacity:0;visibility:hidden;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+    transition:opacity .3s ease, visibility .3s ease;
+  }
+  .modal-overlay.active{opacity:1;visibility:visible;}
+  .modal-card{
+    background:var(--bg-1);border:1px solid var(--line-strong);
+    border-radius:12px;width:100%;max-width:580px;
+    max-height:90vh;display:flex;flex-direction:column;
+    box-shadow:0 25px 60px rgba(0,0,0,.9);
+    transform:scale(.95);transition:transform .3s cubic-bezier(.16,1,.3,1);
+    overflow:hidden;
+  }
+  .modal-overlay.active .modal-card{transform:scale(1);}
+  
+  .modal-header{
+    padding:20px 28px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .modal-header h3{font-size:22px;color:var(--cream);font-weight:800;letter-spacing:.02em;}
+  .modal-close-btn{
+    width:32px;height:32px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;color:var(--mute);background:var(--card);
+    transition:all .2s;cursor:pointer;
+  }
+  .modal-close-btn:hover{color:#fff;background:var(--red);}
+
+  .modal-body{
+    padding:28px;overflow-y:auto;
+  }
+  .form-group{margin-bottom:18px;}
+  .form-label{
+    display:block;font-family:'JetBrains Mono',monospace;
+    font-size:12px;color:var(--mute);text-transform:uppercase;
+    letter-spacing:.06em;margin-bottom:8px;
+  }
+  .form-input, .form-select, .form-textarea{
+    width:100%;background:var(--card);border:1px solid var(--line-strong);
+    padding:12px 16px;border-radius:6px;color:var(--text);font-size:14.5px;
+    outline:none;transition:border-color .2s, box-shadow .2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus{
+    border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,196,104,.15);
+  }
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:480px){.form-row{grid-template-columns:1fr;}}
+
+  .order-preview-box{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:8px;padding:16px;margin-bottom:20px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .order-preview-box .pkg-title{font-size:15px;font-weight:700;color:var(--cream);}
+  .order-preview-box .pkg-price{font-family:'Big Shoulders Display',sans-serif;font-size:24px;font-weight:800;color:var(--gold);}
+  
+  .custom-badge-option{
+    background:rgba(232,196,104,.06);border:1px dashed var(--gold);
+    border-radius:8px;padding:14px 16px;margin-bottom:20px;
+  }
+  .custom-badge-title{
+    font-size:13px;font-weight:600;color:var(--gold);margin-bottom:10px;
+    display:flex;align-items:center;gap:6px;
+  }
+
+  .pay-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
+  .pay-card{
+    border:1px solid var(--line-strong);background:var(--card);
+    border-radius:6px;padding:12px 14px;cursor:pointer;
+    display:flex;align-items:center;gap:10px;transition:all .2s;
+  }
+  .pay-card.active{border-color:var(--red);background:var(--card-2);}
+  .pay-card input{accent-color:var(--red);}
+  .pay-card span{font-size:13px;font-weight:600;color:var(--text);}
+
+  .modal-footer{
+    padding:20px 28px;border-top:1px solid var(--line);
+    background:var(--card);
+  }
+
+  /* Order Success View */
+  .order-success-view{
+    text-align:center;padding:30px 10px;display:none;
+  }
+  .success-icon{
+    width:70px;height:70px;border-radius:50%;background:rgba(34,197,94,.15);
+    border:2px solid var(--success);color:var(--success);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
+    font-size:32px;
+  }
+  .success-code{
+    font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;
+    color:var(--gold);background:var(--card);border:1px solid var(--line-strong);
+    display:inline-block;padding:8px 18px;border-radius:6px;margin:14px 0 20px;
+  }
+
+  /* ---------- LIGHTBOX MODAL ---------- */
+  .lightbox-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.92);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    z-index:4000;opacity:0;visibility:hidden;
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .3s ease, visibility .3s ease;padding:20px;
+  }
+  .lightbox-overlay.active{opacity:1;visibility:visible;}
+  .lightbox-content{
+    max-width:820px;width:100%;text-align:center;position:relative;
+  }
+  .lightbox-visual-box{
+    height:420px;background:var(--card);border-radius:12px;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:16px;
+  }
+  .lightbox-visual-box img{
+    max-width:92%;
+    max-height:92%;
+    object-fit:contain;
+    filter:drop-shadow(0 20px 40px rgba(0,0,0,.8));
+    border-radius:8px;
+  }
+  .lightbox-close{
+    position:absolute;top:-45px;right:0;font-size:26px;color:var(--cream);
+    cursor:pointer;transition:color .2s;
+  }
+  .lightbox-close:hover{color:var(--red);}
+  .lightbox-caption{color:var(--mute);font-size:15px;line-height:1.6;}
+  /* ---------- HISTORY & HONOURS SECTION ---------- */
+  .history-section{
+    background: radial-gradient(circle at top right, rgba(216,30,61,0.08), transparent 45%),
+                radial-gradient(circle at bottom left, rgba(232,196,104,0.06), transparent 50%),
+                var(--bg);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 100px 0;
+  }
+  .honours-hero-stat{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:60px;
+  }
+  @media(max-width:960px){.honours-hero-stat{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:500px){.honours-hero-stat{grid-template-columns:1fr;}}
+  .h-stat-box{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;padding:26px 20px;
+    text-align:center;position:relative;overflow:hidden;transition:transform .3s, border-color .3s;
+  }
+  .h-stat-box:hover{transform:translateY(-5px);border-color:var(--gold);}
+  .h-stat-box::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red);
+  }
+  .h-stat-box.gold-top::before{background:var(--gold);}
+  .h-stat-num{
+    font-family:'Big Shoulders Display',sans-serif;font-size:clamp(44px,4vw,56px);
+    font-weight:900;line-height:1;color:var(--cream);margin-bottom:6px;
+  }
+  .h-stat-num span{color:var(--gold);}
+  .h-stat-lbl{
+    font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;
+    letter-spacing:.08em;color:var(--mute);
+  }
+
+  .history-tabs{
+    display:flex;gap:12px;margin-bottom:38px;border-bottom:1px solid var(--line);padding-bottom:14px;flex-wrap:wrap;
+  }
+  .h-tab-btn{
+    padding:10px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;
+    background:transparent;border:1px solid var(--line-strong);color:var(--mute);
+    transition:all .25s ease;display:flex;align-items:center;gap:8px;
+  }
+  .h-tab-btn:hover{color:var(--text);border-color:var(--gold);}
+  .h-tab-btn.active{background:var(--gold);color:#0a0b0d;border-color:var(--gold);}
+
+  .tab-pane{display:none;}
+  .tab-pane.active{display:block;animation:fadeIn .4s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+  /* Trophy Grid */
+  .trophy-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+  }
+  @media(max-width:960px){.trophy-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:600px){.trophy-grid{grid-template-columns:1fr;}}
+
+  .trophy-card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;padding:28px 24px;
+    position:relative;overflow:hidden;transition:all .3s ease;display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .trophy-card:hover{transform:translateY(-6px);border-color:rgba(232,196,104,.4);box-shadow:0 15px 35px rgba(0,0,0,.6);}
+  .trophy-card.invincibles{
+    background:linear-gradient(145deg, #1d1912, #111215);border-color:rgba(232,196,104,.5);
+    box-shadow:0 10px 30px rgba(232,196,104,.12);
+  }
+  .trophy-icon-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .trophy-icon{
+    width:52px;height:52px;border-radius:10px;background:var(--card-2);border:1px solid var(--line-strong);
+    display:flex;align-items:center;justify-content:center;font-size:26px;
+  }
+  .trophy-count-badge{
+    font-family:'Big Shoulders Display',sans-serif;font-size:28px;font-weight:900;
+    color:var(--gold);background:var(--gold-dim);padding:4px 14px;border-radius:20px;border:1px solid var(--gold);
+  }
+  .trophy-card h3{font-size:22px;color:var(--cream);margin-bottom:8px;font-weight:800;}
+  .trophy-card p{font-size:13.5px;color:var(--mute);line-height:1.55;margin-bottom:16px;}
+  .trophy-years{
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--gold);line-height:1.6;
+    padding-top:12px;border-top:1px dashed var(--line);
+  }
+
+  /* Timeline */
+  .timeline-flow{
+    position:relative;padding:20px 0 20px 32px;
+  }
+  .timeline-flow::before{
+    content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;background:linear-gradient(180deg, var(--red), var(--gold), var(--line-strong));
+  }
+  .timeline-item{
+    position:relative;margin-bottom:36px;
+  }
+  .timeline-item:last-child{margin-bottom:0;}
+  .t-dot{
+    position:absolute;left:-32px;top:4px;width:20px;height:20px;border-radius:50%;
+    background:var(--bg);border:3px solid var(--red);display:flex;align-items:center;justify-content:center;
+  }
+  .timeline-item.highlight .t-dot{border-color:var(--gold);background:var(--gold-dim);}
+  .t-year{
+    font-family:'Big Shoulders Display',sans-serif;font-size:26px;font-weight:900;color:var(--gold);
+    display:inline-block;margin-bottom:6px;
+  }
+  .t-content{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px;
+  }
+  .t-content h4{font-size:19px;color:var(--cream);margin-bottom:6px;font-weight:800;}
+  .t-content p{font-size:14px;color:var(--mute);line-height:1.6;}
+
+  /* Badge Grid */
+  .badge-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:20px;
+  }
+  @media(max-width:960px){.badge-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:500px){.badge-grid{grid-template-columns:1fr;}}
+  .badge-box{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;padding:24px 18px;text-align:center;
+    transition:transform .3s, border-color .3s;
+  }
+  .badge-box:hover{transform:translateY(-5px);border-color:var(--gold);}
+  .badge-img-wrapper{
+    height:90px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+  }
+  .badge-img-wrapper img{max-height:85px;max-width:85px;object-fit:contain;}
+  .badge-box h4{font-size:17px;color:var(--cream);margin-bottom:6px;font-weight:700;}
+  .badge-box p{font-size:12.5px;color:var(--mute);line-height:1.45;}
+
+  /* ---------- TOAST ---------- */
+  .toast-container{
+    position:fixed;bottom:24px;right:24px;z-index:5000;
+    display:flex;flex-direction:column;gap:10px;pointer-events:none;
+  }
+  .toast{
+    pointer-events:auto;
+    background:var(--card-2);border:1px solid var(--line-strong);border-left:4px solid var(--gold);
+    color:var(--text);padding:14px 20px;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.8);
+    display:flex;align-items:center;gap:12px;font-size:14px;
+    animation:toastIn .3s cubic-bezier(.16,1,.3,1) forwards;
+  }
+  .toast.toast-success{border-left-color:var(--success);}
+  .toast.toast-danger{border-left-color:var(--red);}
+  @keyframes toastIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes toastOut{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(20px);}}
 </style>
 </head>
 <body>
@@ -358,17 +852,29 @@
 <nav id="nav">
   <div class="wrap">
     <div class="brand">
-      <span class="brand-mark">A</span>
+      <img src="assets/images/arsenal-1886-crest.png" alt="Arsenal 1886" style="width:34px;height:34px;object-fit:contain;border-radius:6px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5));" />
       <span>ARSENAL 1886<small>Kit Collection</small></span>
     </div>
     <div class="nav-links">
       <a href="#features">Đặc quyền</a>
       <a href="#showcase">Sản phẩm</a>
+      <a href="#gallery">Thư viện ảnh</a>
+      <a href="#history-honours">Lịch sử & Cúp</a>
       <a href="#pricing">Bảng giá</a>
       <a href="#reviews">Đánh giá</a>
       <a href="#faq">Hỏi đáp</a>
     </div>
-    <a href="#pricing" class="nav-cta">Đặt ngay</a>
+    <div class="nav-right-actions">
+      <button class="nav-cart-btn" id="open-cart-btn" aria-label="Mở giỏ hàng">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span>Giỏ hàng</span>
+        <span class="cart-badge" id="cart-count">0</span>
+      </button>
+      <a href="#pricing" class="nav-cta">Đặt ngay</a>
+    </div>
   </div>
 </nav>
 
@@ -383,7 +889,10 @@
         <p class="hero-sub">Vải thi đấu chuẩn thi đấu, form dáng chính xác từng milimet, thêu tên số theo yêu cầu. Đây không phải một chiếc áo phông — đây là tấm vé bước vào Emirates.</p>
         <div class="hero-actions">
           <a href="#pricing" class="btn-primary">Chọn phiên bản của bạn →</a>
-          <a href="#showcase" class="btn-ghost">Xem chi tiết vải</a>
+          <a href="#gallery" class="btn-ghost">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            Xem thư viện ảnh
+          </a>
         </div>
       </div>
 
@@ -406,7 +915,7 @@
       <span><b>Chất liệu</b> · AEROREADY® tái chế</span>
       <span><b>Thêu tên số</b> · Miễn phí trọn bộ</span>
       <span><b>Bảo hành</b> · Đổi form 30 ngày</span>
-      <span><b>Xác thực</b> · Tem NFC chống giả</span>
+      <span><b>Bảo chứng</b> · Adidas chính hãng 100%</span>
     </div>
   </div>
 </header>
@@ -421,9 +930,9 @@
 
     <div class="feat-grid reveal">
       <div class="feat-card">
-        <div class="fi"><svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><path d="M16 8L2 22"/><path d="M17.5 15H9"/></svg></div>
-        <h4>Vải thi đấu thật</h4>
-        <p>Cùng công nghệ thoát ẩm AEROREADY® dùng trên sân, không phải bản polyester đại trà.</p>
+        <div class="fi"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+        <h4>Logo Ngoại Hạng Anh 3D</h4>
+        <p>Bộ đôi patch tay áo Premier League & No Room For Racism ép nhiệt nhung nổi 3D chuẩn cầu thủ.</p>
       </div>
       <div class="feat-card">
         <div class="fi"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6.3L12 16l-5.5 3.5 1-6.3L3 8.9 9 8z"/></svg></div>
@@ -441,9 +950,9 @@
         <p>Kho hàng nội địa, theo dõi đơn realtime, đóng gói hộp cứng chống móp mép ngực áo.</p>
       </div>
       <div class="feat-card">
-        <div class="fi"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7z"/></svg></div>
-        <h4>Tem NFC xác thực</h4>
-        <p>Quét mã trong cổ áo để xác minh nguồn gốc — tránh mua nhầm hàng nhái trôi nổi.</p>
+        <div class="fi"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6.3L12 16l-5.5 3.5 1-6.3L3 8.9 9 8z"/></svg></div>
+        <h4>Thương hiệu Adidas</h4>
+        <p>Bảo chứng chất lượng chuẩn thể thao quốc tế từ tập đoàn trang phục thi đấu hàng đầu thế giới.</p>
         <span class="tag">100% chính hãng</span>
       </div>
       <div class="feat-card">
@@ -458,17 +967,17 @@
 <section id="showcase" class="showcase">
   <div class="wrap">
     <div class="show-grid">
-      <div class="jersey-frame reveal">
-        <svg class="jersey-svg" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
-          <path d="M60 20 L20 45 L35 75 L55 65 L55 200 L145 200 L145 65 L165 75 L180 45 L140 20 L120 10 Q100 25 80 10 Z" fill="#15171b" stroke="#d81e3d" stroke-width="2"/>
-          <path d="M80 10 Q100 25 120 10 L128 22 Q100 38 72 22 Z" fill="#0a0b0d" stroke="#e8c468" stroke-width="1"/>
-          <rect x="55" y="60" width="90" height="6" fill="#e8c468" opacity="0.5"/>
-          <text x="100" y="130" text-anchor="middle" font-family="Big Shoulders Display, sans-serif" font-size="46" font-weight="800" fill="#e8c468">7</text>
-        </svg>
+      <div class="jersey-frame reveal" id="jersey-display-frame">
+        <img id="jersey-home-img" src="assets/images/arsenal-home.jpg" alt="Áo đấu Arsenal Sân Nhà 1886" class="jersey-img" />
+        <img id="jersey-away-img" src="assets/images/arsenal-away.jpg" alt="Áo đấu Arsenal Sân Khách 1886" class="jersey-img" style="display:none;" />
+        <div class="jersey-toggle">
+          <button class="active" onclick="switchJerseyVersion('home', this)">Sân Nhà (Home)</button>
+          <button onclick="switchJerseyVersion('away', this)">Sân Khách (Away)</button>
+        </div>
       </div>
       <div class="reveal">
         <div class="eyebrow">Thông số kỹ thuật</div>
-        <h2 style="font-size:clamp(32px,3.6vw,44px);color:var(--cream);font-weight:800;margin:16px 0 34px;">Đọc kỹ trước<br>khi xỏ tay áo.</h2>
+        <h2 style="font-size:clamp(32px,3.6vw,44px);color:var(--cream);font-weight:800;margin:16px 0 30px;">Đọc kỹ trước<br>khi xỏ tay áo.</h2>
         <ul class="spec-list">
           <li><span class="k">Chất liệu</span><span class="v">100% Polyester tái chế, AEROREADY®</span></li>
           <li><span class="k">Trọng lượng</span><span class="v">180 gsm — mỏng nhẹ, thoáng khí</span></li>
@@ -476,73 +985,445 @@
           <li><span class="k">Công nghệ in</span><span class="v">Ép nhiệt Sublimation, không bong</span></li>
           <li><span class="k">Xuất xứ</span><span class="v">Sản xuất theo tiêu chuẩn UEFA</span></li>
         </ul>
-        <div class="eyebrow" style="margin-top:34px;">Bảng size có sẵn</div>
-        <div class="size-row">
-          <div class="size-chip">S</div>
-          <div class="size-chip">M</div>
-          <div class="size-chip">L</div>
-          <div class="size-chip">XL</div>
-          <div class="size-chip">XXL</div>
+        <div class="eyebrow" style="margin-top:30px;">Chọn kích cỡ áo</div>
+        <div class="size-row" id="showcase-size-selector">
+          <div class="size-chip" data-size="S">S</div>
+          <div class="size-chip active" data-size="M">M</div>
+          <div class="size-chip" data-size="L">L</div>
+          <div class="size-chip" data-size="XL">XL</div>
+          <div class="size-chip" data-size="XXL">XXL</div>
+        </div>
+        <div style="margin-top:28px;">
+          <button class="btn-primary" onclick="openOrderModal('Áo Sân Nhà 1886', 890000)">Đặt mua áo với Size này →</button>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<section id="pricing">
+<!-- GALLERY SECTION (THƯ VIỆN ẢNH) -->
+<section id="gallery" class="gallery-section">
   <div class="wrap">
-    <div class="sec-head reveal" style="margin-left:auto;margin-right:auto;text-align:center;">
-      <div class="eyebrow" style="justify-content:center;">Bảng giá</div>
-      <h2>Chọn đúng gói,<br>không cần đắn đo.</h2>
-      <p style="margin-left:auto;margin-right:auto;">Ba lựa chọn rõ ràng, không phí ẩn, không phải "liên hệ để biết giá".</p>
+    <div class="sec-head reveal">
+      <div class="eyebrow">Thư viện ảnh chi tiết</div>
+      <h2>Cận cảnh chất lượng chế tác.</h2>
+      <p>Quan sát chi tiết từ thớ vải dệt vi mô, tem NFC, huy hiệu thêu 3D đến hộp đóng gói sưu tầm.</p>
     </div>
 
-    <div class="price-grid reveal">
-      <div class="price-card">
-        <h4>Áo sân nhà</h4>
-        <div class="price-amt">890<sup>K₫</sup></div>
-        <div class="price-note">1 áo đấu, không thêu tên số</div>
-        <ul class="price-feats">
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>1 áo chính hãng</li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Tem NFC xác thực</li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Giao hàng tiêu chuẩn</li>
-          <li class="off"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thêu tên số riêng</li>
-          <li class="off"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Hộp quà cao cấp</li>
-        </ul>
-        <a href="#" class="price-btn">Chọn gói này</a>
+    <div class="gallery-filters reveal">
+      <button class="g-filter-btn active" onclick="filterGallery('all', this)">Tất cả (6)</button>
+      <button class="g-filter-btn" onclick="filterGallery('home', this)">Áo Sân Nhà (Home)</button>
+      <button class="g-filter-btn" onclick="filterGallery('away', this)">Áo Sân Khách (Away)</button>
+      <button class="g-filter-btn" onclick="filterGallery('pl-badge', this)">Badge Ngoại Hạng Anh</button>
+      <button class="g-filter-btn" onclick="filterGallery('badge', this)">Huy Hiệu 1886</button>
+      <button class="g-filter-btn" onclick="filterGallery('brand', this)">Thương Hiệu Adidas</button>
+      <button class="g-filter-btn" onclick="filterGallery('package', this)">Hộp quà Sưu tầm</button>
+    </div>
+
+    <div class="gallery-grid reveal" id="gallery-container">
+      <!-- Item 1: HOME KIT (REAL PHOTO) -->
+      <div class="gallery-card" data-category="home" onclick="openLightbox(0)">
+        <div class="gallery-visual">
+          <img src="assets/images/arsenal-home.jpg" alt="Áo đấu Arsenal Sân Nhà 1886" />
+          <div class="gallery-overlay"><span>Xem phóng to 🔍</span></div>
+        </div>
+        <div class="gallery-info">
+          <div class="g-tag">Bản Sân Nhà</div>
+          <h4>Áo Đấu Arsenal Home Kit (Đỏ Truyền Thống & Trắng)</h4>
+          <p>Sắc đỏ pháo thủ kinh điển phối tay trắng, logo Adidas Performance và huy hiệu CLB dập nổi tinh xảo.</p>
+        </div>
       </div>
 
-      <div class="price-card feat">
-        <h4>Bộ sưu tập đầy đủ</h4>
-        <div class="price-amt">1.590<sup>K₫</sup></div>
-        <div class="price-note">Áo sân nhà + sân khách, thêu tên số</div>
-        <ul class="price-feats">
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>2 áo (sân nhà + sân khách)</li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thêu tên số miễn phí</li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Giao nhanh 1–3 ngày</li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Đổi form 30 ngày</li>
-          <li class="off"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Hộp quà cao cấp</li>
-        </ul>
-        <a href="#" class="price-btn">Chọn gói này</a>
+      <!-- Item 2: AWAY KIT (REAL PHOTO) -->
+      <div class="gallery-card" data-category="away" onclick="openLightbox(1)">
+        <div class="gallery-visual">
+          <img src="assets/images/arsenal-away.jpg" alt="Áo đấu Arsenal Sân Khách 1886" />
+          <div class="gallery-overlay"><span>Xem phóng to 🔍</span></div>
+        </div>
+        <div class="gallery-info">
+          <div class="g-tag">Bản Sân Khách</div>
+          <h4>Áo Đấu Arsenal Away Kit (Xanh Đêm & Vàng Kim)</h4>
+          <p>Họa tiết dệt chìm 3D Chevron độc quyền, logo cỏ 3 lá Adidas Originals mạ vàng hoàng gia.</p>
+        </div>
       </div>
 
-      <div class="price-card">
-        <h4>Collector Edition</h4>
-        <div class="price-amt">2.490<sup>K₫</sup></div>
-        <div class="price-note">Trọn bộ 3 áo, đóng hộp sưu tầm</div>
-        <ul class="price-feats">
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>3 áo (nhà, khách, thứ ba)</li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thêu tên số miễn phí</li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Hộp quà gỗ cao cấp</li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thẻ số hiệu giới hạn</li>
-          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Ưu tiên hỗ trợ riêng</li>
-        </ul>
-        <a href="#" class="price-btn">Chọn gói này</a>
+      <!-- Item 3: PREMIER LEAGUE BADGE (REAL PHOTO) -->
+      <div class="gallery-card" data-category="pl-badge" onclick="openLightbox(2)">
+        <div class="gallery-visual">
+          <img src="assets/images/premier-league-badge.jpg" alt="Logo Ngoại Hạng Anh Premier League & No Room For Racism" />
+          <div class="gallery-overlay"><span>Xem phóng to 🔍</span></div>
+        </div>
+        <div class="gallery-info">
+          <div class="g-tag">Badge Giải Đấu</div>
+          <h4>Logo Ngoại Hạng Anh & No Room For Racism</h4>
+          <p>Bộ đôi patch tay áo ép nhiệt nhung nổi 3D chuẩn Premier League, sắc nét từng chi tiết và chống bong tróc tuyệt đối.</p>
+        </div>
+      </div>
+
+      <!-- Item 4: BADGE (REAL PHOTO) -->
+      <div class="gallery-card" data-category="badge" onclick="openLightbox(3)">
+        <div class="gallery-visual">
+          <img src="assets/images/arsenal-1886-crest.png" alt="Huy hiệu biểu tượng Arsenal 1886 Edition" />
+          <div class="gallery-overlay"><span>Xem phóng to 🔍</span></div>
+        </div>
+        <div class="gallery-info">
+          <div class="g-tag">Huy hiệu Cổ điển 1886</div>
+          <h4>Huy Hiệu Arsenal 1886 "Victoria Concordia Crescit"</h4>
+          <p>Biểu tượng di sản lịch sử với khẩu pháo thần công và châm ngôn bất hủ "Chiến thắng đến từ sự hòa hợp".</p>
+        </div>
+      </div>
+
+      <!-- Item 5: ADIDAS BRAND (REAL PHOTO) -->
+      <div class="gallery-card" data-category="brand" onclick="openLightbox(4)">
+        <div class="gallery-visual" style="background:#ffffff;">
+          <img src="assets/images/adidas-logo.png" alt="Logo Thương Hiệu Adidas Chính Hãng" style="background:#ffffff;padding:18px;object-fit:contain;" />
+          <div class="gallery-overlay"><span>Xem phóng to 🔍</span></div>
+        </div>
+        <div class="gallery-info">
+          <div class="g-tag">Thương Hiệu & Nhà Chế Tác</div>
+          <h4>Logo Thương Hiệu Adidas Chính Hãng</h4>
+          <p>Nhà tài trợ kỹ thuật & chế tác bộ áo đấu Arsenal 1886 với chất lượng hoàn thiện chuẩn thi đấu quốc tế.</p>
+        </div>
+      </div>
+
+      <!-- Item 6: PACKAGE -->
+      <div class="gallery-card" data-category="package" onclick="openLightbox(5)">
+        <div class="gallery-visual">
+          <img src="assets/images/arsenal-collector-box.jpg" alt="Hộp quà Arsenal FC Collector Edition" />
+          <div class="gallery-overlay"><span>Xem phóng to 🔍</span></div>
+        </div>
+        <div class="gallery-info">
+          <div class="g-tag">Hộp quà Sưu tầm</div>
+          <h4>Hộp Quà Arsenal FC Collector's Edition (Ultimate Fan Kit)</h4>
+          <p>Hộp vali cao cấp bọc nhung đỏ, kèm áo đấu chính hãng, khăn choàng, tất thi đấu, huy hiệu và sách lịch sử CLB.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- HISTORY & TROPHY CABINET (LỊCH SỬ & PHÒNG TRUYỀN THỐNG) -->
+<section id="history-honours" class="history-section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Di sản 140 năm vẻ vang (1886 - Nay)</div>
+      <h2>Lịch sử, Danh hiệu & Kỷ nguyên Hoàng kim.</h2>
+      <p>Từ những người thợ pháo binh Royal Arsenal năm 1886 đến biểu tượng bất tử The Invincibles và pháo đài Emirates Stadium.</p>
+    </div>
+
+    <!-- Top Key Stats Grid -->
+    <div class="honours-hero-stat reveal">
+      <div class="h-stat-box gold-top">
+        <div class="h-stat-num"><span>13</span></div>
+        <div class="h-stat-lbl">Vô Địch Ngoại Hạng Anh & Hạng Nhất</div>
+      </div>
+      <div class="h-stat-box">
+        <div class="h-stat-num">14</div>
+        <div class="h-stat-lbl">Cúp FA (Kỷ lục nước Anh)</div>
+      </div>
+      <div class="h-stat-box gold-top">
+        <div class="h-stat-num"><span>49</span></div>
+        <div class="h-stat-lbl">Trận Bất Bại Kỷ Lục (The Invincibles)</div>
+      </div>
+      <div class="h-stat-box">
+        <div class="h-stat-num">50</div>
+        <div class="h-stat-lbl">Tổng Danh Hiệu Lớn Mọi Thời Đại</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="history-tabs reveal">
+      <button class="h-tab-btn active" onclick="switchHistoryTab('trophies', this)">
+        <span>🏆</span> Bộ Sưu Tập Cúp (Champions)
+      </button>
+      <button class="h-tab-btn" onclick="switchHistoryTab('timeline', this)">
+        <span>⏳</span> Cột Mốc Lịch Sử Ra Đời
+      </button>
+      <button class="h-tab-btn" onclick="switchHistoryTab('badges', this)">
+        <span>🛡️</span> Huy Hiệu Giải Đấu & CLB
+      </button>
+    </div>
+
+    <!-- TAB 1: TROPHIES & CHAMPIONS -->
+    <div id="tab-trophies" class="tab-pane active reveal">
+      <div class="trophy-grid">
+        <!-- Trophy 1: Golden Premier League Trophy -->
+        <div class="trophy-card invincibles">
+          <div>
+            <div class="trophy-icon-header">
+              <div class="trophy-icon">🥇</div>
+              <div class="trophy-count-badge">1 VÀNG</div>
+            </div>
+            <h3>Cúp Vàng Bất Bại The Invincibles</h3>
+            <p>Chiếc cúp vàng nguyên khối duy nhất trong lịch sử 136 năm bóng đá Anh, vinh danh chuỗi 38 trận bất bại vô tiền khoáng hậu mùa 2003/04.</p>
+          </div>
+          <div class="trophy-years">
+            <b>Mùa giải lịch sử:</b> 2003–04 (26 Thắng, 12 Hòa, 0 Thua)
+          </div>
+        </div>
+
+        <!-- Trophy 2: First Division & Premier League -->
+        <div class="trophy-card">
+          <div>
+            <div class="trophy-icon-header">
+              <div class="trophy-icon">🏆</div>
+              <div class="trophy-count-badge">13x</div>
+            </div>
+            <h3>Vô Địch Ngoại Hạng Anh & Hạng Nhất</h3>
+            <p>Xếp thứ 3 trong lịch sử bóng đá Anh. Thống trị các thập niên 1930, 1970, 1989, 1991, 1998, 2002 và 2004.</p>
+          </div>
+          <div class="trophy-years">
+            1931, 1933, 1934, 1935, 1938, 1948, 1953, 1971, 1989, 1991, 1998, 2002, 2004
+          </div>
+        </div>
+
+        <!-- Trophy 3: FA Cup Record -->
+        <div class="trophy-card">
+          <div>
+            <div class="trophy-icon-header">
+              <div class="trophy-icon">🏆</div>
+              <div class="trophy-count-badge">14x</div>
+            </div>
+            <h3>Cúp FA (Kỷ Lục Nước Anh)</h3>
+            <p>Câu lạc bộ đoạt nhiều Cúp FA nhất lịch sử bóng đá thế giới. Danh hiệu khẳng định vị thế Vua đấu cúp tại sân Wembley.</p>
+          </div>
+          <div class="trophy-years">
+            1930, 1936, 1950, 1971, 1979, 1993, 1998, 2002, 2003, 2005, 2014, 2015, 2017, 2020
+          </div>
+        </div>
+
+        <!-- Trophy 4: Community Shield -->
+        <div class="trophy-card">
+          <div>
+            <div class="trophy-icon-header">
+              <div class="trophy-icon">🛡️</div>
+              <div class="trophy-count-badge">18x</div>
+            </div>
+            <h3>Siêu Cúp Anh (FA Community Shield)</h3>
+            <p>Trận tranh Siêu Cúp mở màn mùa giải đỉnh cao giữa nhà vô địch Premier League và FA Cup, minh chứng cho phong độ đỉnh cao của Pháo Thủ.</p>
+          </div>
+          <div class="trophy-years">
+            1930, 1931, 1933, 1934, 1938, 1948, 1953, 1991, 1998, 1999, 2002, 2004, 2014, 2015, 2017, 2020, 2023...
+          </div>
+        </div>
+
+        <!-- Trophy 5: European Cup Winners' Cup -->
+        <div class="trophy-card">
+          <div>
+            <div class="trophy-icon-header">
+              <div class="trophy-icon">⭐</div>
+              <div class="trophy-count-badge">1x</div>
+            </div>
+            <h3>Cúp C2 Châu Âu (European Cup Winners' Cup)</h3>
+            <p>Đỉnh cao châu Âu năm 1994 sau chiến thắng huyền thoại 1-0 trước Parma tại Copenhagen dưới sự dẫn dắt của HLV George Graham.</p>
+          </div>
+          <div class="trophy-years">
+            1994 (Chung kết: Arsenal 1–0 Parma)
+          </div>
+        </div>
+
+        <!-- Trophy 6: League Cup & Fairs Cup -->
+        <div class="trophy-card">
+          <div>
+            <div class="trophy-icon-header">
+              <div class="trophy-icon">🏅</div>
+              <div class="trophy-count-badge">3x</div>
+            </div>
+            <h3>Cúp Liên Đoàn (EFL) & Cúp Hội Chợ</h3>
+            <p>Bộ sưu tập các cúp đấu quốc nội và châu lục bao gồm 2 cúp Liên đoàn Anh (1987, 1993) và Inter-Cities Fairs Cup (1970).</p>
+          </div>
+          <div class="trophy-years">
+            1970 (Inter-Cities Fairs Cup), 1987, 1993 (League Cup)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: TIMELINE HISTORY -->
+    <div id="tab-timeline" class="tab-pane reveal">
+      <div class="timeline-flow">
+        <!-- 1886 -->
+        <div class="timeline-item highlight">
+          <div class="t-dot"></div>
+          <div class="t-year">1886 — Khởi Đầu Từ Xưởng Vũ Khí Woolwich</div>
+          <div class="t-content">
+            <h4>Sự ra đời của Dial Square & Royal Arsenal</h4>
+            <p>Vào tháng 10 năm 1886, một nhóm công nhân tại xưởng đúc pháo quân đội Royal Arsenal ở Woolwich (Đông Nam London), dẫn đầu bởi David Danskin, đã thành lập CLB bóng đá lấy tên Dial Square. Họ lấy hình ảnh khẩu pháo thần công làm biểu tượng bất tử trường tồn đến ngày nay.</p>
+          </div>
+        </div>
+
+        <!-- 1913 -->
+        <div class="timeline-item">
+          <div class="t-dot"></div>
+          <div class="t-year">1913 — Hành Trình Đến Thánh Địa Highbury</div>
+          <div class="t-content">
+            <h4>Bắc tiến và khai sinh thánh đường Arsenal Stadium</h4>
+            <p>Dưới sự lãnh đạo của Chủ tịch Henry Norris, Arsenal chuyển về Highbury (Bắc London). Nơi đây trở thành một trong những sân vận động giàu tính nghệ thuật Art Deco và lịch sử nhất thế giới túc cầu trong suốt 93 năm.</p>
+          </div>
+        </div>
+
+        <!-- 1930s -->
+        <div class="timeline-item highlight">
+          <div class="t-dot"></div>
+          <div class="t-year">1925–1934 — Triều Đại Herbert Chapman</div>
+          <div class="t-content">
+            <h4>Nhà cách tân vĩ đại định hình bóng đá hiện đại</h4>
+            <p>Herbert Chapman phát minh sơ đồ chiến thuật W-M huyền thoại, áp dụng số áo trên lưng cầu thủ, đèn chiếu sáng ban đêm floodlight và thêm tay áo trắng kinh điển vào sắc đỏ truyền thống. Arsenal đoạt liên tiếp 5 danh hiệu VĐQG và thống trị thập niên 30.</p>
+          </div>
+        </div>
+
+        <!-- 1971 & 1989 -->
+        <div class="timeline-item">
+          <div class="t-dot"></div>
+          <div class="t-year">1971 & 1989 — Những Đêm Kỳ Diệu & Anfield 89</div>
+          <div class="t-content">
+            <h4>Cú đúp Double 1971 và bàn thắng phút 90+2 của Michael Thomas</h4>
+            <p>Năm 1971, Arsenal hoàn tất cú đúp VĐQG và Cúp FA. Vào ngày 26/5/1989, Arsenal tạo nên trận cầu kịch tính nhất lịch sử bóng đá Anh khi đánh bại Liverpool 2-0 ngay tại Anfield ở giây bù giờ cuối cùng để nâng cúp vô địch.</p>
+          </div>
+        </div>
+
+        <!-- 2003-2004 -->
+        <div class="timeline-item highlight">
+          <div class="t-dot"></div>
+          <div class="t-year">1996–2004 — Triều Đại Arsène Wenger & "The Invincibles"</div>
+          <div class="t-content">
+            <h4>Bóng đá vị nghệ thuật & Kỷ lục 49 trận bất bại vĩnh cửu</h4>
+            <p>Giáo sư Arsène Wenger mang đến lối đá tấn công quyến rũ hoa mỹ. Đỉnh cao là mùa giải Ngoại Hạng Anh 2003/04 với Henry, Bergkamp, Vieira, Pires khi Arsenal trở thành đội bóng duy nhất trong lịch sử đăng quang với thành tích bất bại trọn vẹn cả mùa.</p>
+          </div>
+        </div>
+
+        <!-- 2006 - Nay -->
+        <div class="timeline-item">
+          <div class="t-dot"></div>
+          <div class="t-year">2006–Nay — Pháo Đài Emirates & Kỷ Nguyên Tái Thiết</div>
+          <div class="t-content">
+            <h4>Chuyển mình tới SVĐ Emirates và phục hưng dưới thời Mikel Arteta</h4>
+            <p>Năm 2006, Arsenal khánh thành SVĐ Emirates hiện đại 60.000 chỗ ngồi. Dưới sự dẫn dắt của HLV Mikel Arteta cùng lứa ngôi sao trẻ Bukayo Saka, Martin Ødegaard, Arsenal đang viết tiếp những chương sử vàng chói lọi trong lòng hàng triệu Gooners toàn cầu.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: BADGES & INSIGNIAS -->
+    <div id="tab-badges" class="tab-pane reveal">
+      <div class="badge-grid">
+        <!-- Badge 1 -->
+        <div class="badge-box">
+          <div class="badge-img-wrapper">
+            <img src="assets/images/arsenal-1886-crest.png" alt="Huy hiệu Arsenal 1886" />
+          </div>
+          <h4>Huy Hiệu Di Sản 1886</h4>
+          <p>Khẩu pháo thần công thành London và biểu tượng Islington cùng khẩu hiệu Victoria Concordia Crescit.</p>
+        </div>
+
+        <!-- Badge 2 -->
+        <div class="badge-box">
+          <div class="badge-img-wrapper">
+            <img src="assets/images/premier-league-badge.jpg" alt="Badge Premier League" />
+          </div>
+          <h4>Patch Ngoại Hạng Anh</h4>
+          <p>Logo đầu sư tử Premier League mạ nổi 3D kèm thông điệp chống phân biệt chủng tộc No Room For Racism.</p>
+        </div>
+
+        <!-- Badge 3 -->
+        <div class="badge-box">
+          <div class="badge-img-wrapper">
+            <img src="assets/images/adidas-logo.png" alt="Adidas 3-Stripes" style="background:#fff;padding:8px;border-radius:6px;" />
+          </div>
+          <h4>Nhà Chế Tác Adidas</h4>
+          <p>Biểu tượng 3 sọc và Trefoil Originals huyền thoại bảo chứng cho kỹ thuật dệt may đạt chuẩn thi đấu.</p>
+        </div>
+
+        <!-- Badge 4 -->
+        <div class="badge-box">
+          <div class="badge-img-wrapper">
+            <div style="font-size:42px;">🏆</div>
+          </div>
+          <h4>Kỷ Lục 14 Cúp FA</h4>
+          <p>Huy hiệu vinh danh câu lạc bộ đoạt nhiều danh hiệu cúp lâu đời nhất thế giới bóng đá.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-left:auto;margin-right:auto;text-align:center;">
+      <div class="eyebrow" style="justify-content:center;">Bảng giá</div>
+      <h2>Chọn đúng gói,<br>không cần đắn đo.</h2>
+      <p style="margin-left:auto;margin-right:auto;">Ba lựa chọn rõ ràng, không phí ẩn, miễn phí giao hàng toàn quốc.</p>
+    </div>
+
+    <div class="price-grid reveal">
+      <!-- Plan 1 -->
+      <div class="price-card">
+        <h4>Áo sân nhà</h4>
+        <div class="price-amt">890<sup>K₫</sup></div>
+        <div class="price-note">1 áo đấu, không thêu tên số</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>1 áo chính hãng (Sân Nhà)</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Tem NFC xác thực</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Giao hàng tiêu chuẩn</li>
+          <li class="off"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thêu tên số riêng</li>
+          <li class="off"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Hộp quà cao cấp</li>
+        </ul>
+        <div class="price-btn-group">
+          <button class="price-btn" onclick="openOrderModal('Áo Sân Nhà 1886', 890000)">Đặt ngay</button>
+          <button class="price-btn btn-cart" title="Thêm vào giỏ" onclick="addToCart('Áo Sân Nhà 1886', 890000, 'Home')">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Plan 2 (Feat) -->
+      <div class="price-card feat">
+        <h4>Bộ sưu tập đầy đủ</h4>
+        <div class="price-amt">1.590<sup>K₫</sup></div>
+        <div class="price-note">Áo sân nhà + sân khách, thêu tên số</div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>2 áo (Sân nhà + Sân khách)</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thêu tên số miễn phí trọn bộ</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Giao nhanh 1–3 ngày</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Đổi form 30 ngày</li>
+          <li class="off"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Hộp quà gỗ cao cấp</li>
+        </ul>
+        <div class="price-btn-group">
+          <button class="price-btn" onclick="openOrderModal('Bộ Sưu Tập Đầy Đủ (2 Áo)', 1590000)">Đặt ngay</button>
+          <button class="price-btn btn-cart" title="Thêm vào giỏ" onclick="addToCart('Bộ Sưu Tập Đầy Đủ (2 Áo)', 1590000, 'Combo 2')">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Plan 3 -->
+      <div class="price-card">
+        <h4>Collector Edition</h4>
+        <div class="price-amt">2.490<sup>K₫</sup></div>
+        <div class="price-note">Trọn bộ Ultimate Fan Kit kèm Hộp Sưu Tầm</div>
+        <div style="margin:12px 0 16px;border-radius:8px;overflow:hidden;border:1px solid var(--line);cursor:pointer;" onclick="openLightbox(5)" title="Xem chi tiết hộp quà">
+          <img src="assets/images/arsenal-collector-box.jpg" alt="Hộp quà Arsenal FC Collector Edition" style="width:100%;height:115px;object-fit:cover;display:block;transition:transform .3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" />
+        </div>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Trọn bộ Áo đấu + Khăn + Tất + Huy hiệu</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Hộp quà Vali lót nhung sang trọng</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thêu tên số miễn phí riêng</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Thẻ số hiệu & Kỷ niệm chương độc bản</li>
+          <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Ưu tiên hỗ trợ riêng 24/7</li>
+        </ul>
+        <div class="price-btn-group">
+          <button class="price-btn" onclick="openOrderModal('Collector Edition (Trọn bộ 3 Áo)', 2490000)">Đặt ngay</button>
+          <button class="price-btn btn-cart" title="Thêm vào giỏ" onclick="addToCart('Collector Edition (Trọn bộ 3 Áo)', 2490000, 'Collector')">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
 <section id="reviews" class="test-strip">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -571,6 +1452,7 @@
   </div>
 </section>
 
+<!-- FAQ -->
 <section id="faq">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -598,15 +1480,17 @@
   </div>
 </section>
 
+<!-- CTA BAND -->
 <section class="cta-band">
   <div class="wrap">
     <div class="eyebrow" style="justify-content:center;">Chỉ còn số lượng có hạn</div>
     <h2 style="margin-top:16px;">Đừng để hết hàng<br>trước hồi còi khai cuộc.</h2>
     <p>96% số lượng đợt phát hành đã được đặt. Giữ chỗ chiếc áo của bạn trước khi hết ưu đãi thêu tên số miễn phí.</p>
-    <a href="#pricing" class="btn-primary">Đặt áo của bạn ngay →</a>
+    <button class="btn-primary" onclick="openOrderModal('Bộ Sưu Tập Đầy Đủ (2 Áo)', 1590000)">Đặt áo của bạn ngay →</button>
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer>
   <div class="wrap">
     <div class="foot-grid">
@@ -648,24 +1532,186 @@
   </div>
 </footer>
 
+<!-- CART DRAWER (GIỎ HÀNG POPUP) -->
+<div class="cart-drawer-overlay" id="cart-drawer-overlay" onclick="closeCart(event)">
+  <div class="cart-drawer" onclick="event.stopPropagation()">
+    <div class="cart-head">
+      <h3>Giỏ Hàng Của Bạn</h3>
+      <button class="cart-close-btn" onclick="toggleCart(false)">✕</button>
+    </div>
+    <div class="cart-body" id="cart-items-container">
+      <!-- Items dynamically rendered here -->
+    </div>
+    <div class="cart-foot" id="cart-footer">
+      <div class="cart-summary-line">
+        <span>Tạm tính</span>
+        <span id="cart-subtotal">0 ₫</span>
+      </div>
+      <div class="cart-summary-line">
+        <span>Phí vận chuyển</span>
+        <span style="color:var(--success);font-weight:600;">Miễn phí toàn quốc</span>
+      </div>
+      <div class="cart-summary-total">
+        <span>Tổng thanh toán</span>
+        <span class="total-num" id="cart-total-price">0 ₫</span>
+      </div>
+      <button class="cart-checkout-btn" onclick="proceedCartCheckout()">
+        Tiến hành Đặt Hàng →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER MODAL (MODAL ĐẶT HÀNG) -->
+<div class="modal-overlay" id="order-modal-overlay" onclick="closeOrderModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="modal-title">Đặt Mua Áo Đấu</h3>
+      <button class="modal-close-btn" onclick="toggleOrderModal(false)">✕</button>
+    </div>
+    
+    <div class="modal-body" id="order-form-view">
+      <div class="order-preview-box">
+        <div>
+          <div class="pkg-title" id="order-pkg-name">Áo Sân Nhà 1886</div>
+          <small style="color:var(--mute);font-size:12px;">Đã kèm tem NFC & Bảo hành 30 ngày</small>
+        </div>
+        <div class="pkg-price" id="order-pkg-price">890.000 ₫</div>
+      </div>
+
+      <form id="order-checkout-form" onsubmit="handleOrderSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Chọn Size Áo</label>
+            <select class="form-select" id="order-size" required>
+              <option value="S">Size S (50-60kg, 1m60-1m68)</option>
+              <option value="M" selected>Size M (60-70kg, 1m68-1m75)</option>
+              <option value="L">Size L (70-78kg, 1m75-1m80)</option>
+              <option value="XL">Size XL (78-85kg, 1m80-1m85)</option>
+              <option value="XXL">Size XXL (Trên 85kg)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phiên bản Áo</label>
+            <select class="form-select" id="order-version">
+              <option value="Home">Áo Sân Nhà (Đỏ - Trắng)</option>
+              <option value="Away">Áo Sân Khách (Đen - Vàng Gold)</option>
+              <option value="Both">Trọn Bộ 2 Áo (Home + Away)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="custom-badge-option">
+          <div class="custom-badge-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Tùy biến In Tên & Số áo riêng (Miễn phí)
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0;">
+              <input type="text" class="form-input" id="order-custom-name" placeholder="VD: SAKA hoặc TÊN BẠN" maxlength="15">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <input type="number" class="form-input" id="order-custom-number" placeholder="Số áo (VD: 7)" min="1" max="99">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Họ và Tên người nhận *</label>
+          <input type="text" class="form-input" id="order-fullname" placeholder="Nguyễn Văn A" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Số điện thoại nhận hàng *</label>
+          <input type="tel" class="form-input" id="order-phone" placeholder="0912 345 678" pattern="[0-9]{10,11}" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Địa chỉ nhận hàng chi tiết *</label>
+          <textarea class="form-textarea" id="order-address" rows="2" placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Phương thức thanh toán</label>
+          <div class="pay-options">
+            <label class="pay-card active" onclick="selectPayment(this)">
+              <input type="radio" name="pay-method" value="COD" checked>
+              <span>Thanh toán COD (Khi nhận hàng)</span>
+            </label>
+            <label class="pay-card" onclick="selectPayment(this)">
+              <input type="radio" name="pay-method" value="QR">
+              <span>Chuyển khoản QR 24/7</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;">
+          <button type="submit" class="cart-checkout-btn" style="width:100%;">
+            Xác nhận Đặt Hàng Ngay 🚀
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Success View -->
+    <div class="modal-body order-success-view" id="order-success-view">
+      <div class="success-icon">✓</div>
+      <h3 style="font-size:26px;color:var(--cream);font-weight:800;margin-bottom:8px;">ĐẶT HÀNG THÀNH CÔNG!</h3>
+      <p style="color:var(--mute);font-size:14.5px;">Cảm ơn bạn đã lựa chọn bộ sưu tập Arsenal 1886 Kit.</p>
+      
+      <div class="success-code" id="success-order-code">Mã đơn: #ARS-88294</div>
+
+      <div style="background:var(--card);padding:18px;border-radius:8px;text-align:left;margin-bottom:24px;border:1px solid var(--line);">
+        <div style="font-size:13.5px;color:var(--mute);margin-bottom:6px;">📦 Đơn hàng sẽ được kiểm tra và đóng gói trong vòng <b>24h</b>.</div>
+        <div style="font-size:13.5px;color:var(--mute);margin-bottom:6px;">📞 Nhân viên CSKH sẽ gọi điện xác nhận size áo và thông tin in ấn.</div>
+        <div style="font-size:13.5px;color:var(--mute);">🚚 Dự kiến giao hàng: <b>1 – 3 ngày làm việc</b>.</div>
+      </div>
+
+      <button class="btn-primary" style="width:100%;justify-content:center;" onclick="toggleOrderModal(false)">
+        Hoàn tất & Tiếp tục xem trang
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX MODAL (XEM ẢNH PHÓNG TO) -->
+<div class="lightbox-overlay" id="lightbox-overlay" onclick="closeLightbox(event)">
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <span class="lightbox-close" onclick="closeLightboxDirect()">✕ Đóng</span>
+    <div class="lightbox-visual-box" id="lightbox-visual-box">
+      <!-- Dynamic SVG/Image goes here -->
+    </div>
+    <div class="lightbox-caption">
+      <h4 id="lightbox-title">Chi tiết sản phẩm</h4>
+      <p id="lightbox-desc">Mô tả chi tiết hình ảnh.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
 <script>
+  /* ---------- NAV SCROLL ---------- */
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 40);
   });
 
+  /* ---------- COUNTDOWN ---------- */
   let total = 8*3600 + 42*60 + 17;
   const h = document.getElementById('cd-h'), m = document.getElementById('cd-m'), s = document.getElementById('cd-s');
   function tick(){
     if(total <= 0) return;
     total--;
     const hh = Math.floor(total/3600), mm = Math.floor((total%3600)/60), ss = total%60;
-    h.textContent = String(hh).padStart(2,'0');
-    m.textContent = String(mm).padStart(2,'0');
-    s.textContent = String(ss).padStart(2,'0');
+    if(h) h.textContent = String(hh).padStart(2,'0');
+    if(m) m.textContent = String(mm).padStart(2,'0');
+    if(s) s.textContent = String(ss).padStart(2,'0');
   }
   setInterval(tick, 1000);
 
+  /* ---------- FAQ ACCORDION ---------- */
   document.querySelectorAll('.faq-item').forEach(item => {
     const q = item.querySelector('.faq-q');
     const a = item.querySelector('.faq-a');
@@ -683,10 +1729,346 @@
     });
   });
 
+  /* ---------- REVEAL ANIMATION ---------- */
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
   }, {threshold:0.12});
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ---------- SHOWCASE INTERACTION ---------- */
+  const sizeChips = document.querySelectorAll('#showcase-size-selector .size-chip');
+  let selectedShowcaseSize = 'M';
+  sizeChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      sizeChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      selectedShowcaseSize = chip.dataset.size;
+      showToast(`Đã chọn kích cỡ: Size ${selectedShowcaseSize}`);
+    });
+  });
+
+  function switchJerseyVersion(version, btn){
+    document.querySelectorAll('.jersey-toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const homeImg = document.getElementById('jersey-home-img');
+    const awayImg = document.getElementById('jersey-away-img');
+    const versionSelect = document.getElementById('order-version');
+    
+    if(version === 'home'){
+      if(homeImg) homeImg.style.display = 'block';
+      if(awayImg) awayImg.style.display = 'none';
+      if(versionSelect) versionSelect.value = 'Home';
+      showToast('Đang xem: Áo Sân Nhà 1886 (Home Kit)');
+    } else {
+      if(homeImg) homeImg.style.display = 'none';
+      if(awayImg) awayImg.style.display = 'block';
+      if(versionSelect) versionSelect.value = 'Away';
+      showToast('Đang xem: Áo Sân Khách 1886 (Away Kit)');
+    }
+  }
+
+  /* ---------- GALLERY FILTER & LIGHTBOX DATA ---------- */
+  const galleryData = [
+    {
+      title: "Áo Đấu Arsenal Sân Nhà 1886 (Home Kit)",
+      desc: "Sắc đỏ pháo thủ kinh điển phối tay trắng, logo Adidas Performance và biểu tượng Arsenal 1886 dập nổi tinh xảo.",
+      tag: "Bản Sân Nhà",
+      category: "home",
+      img: "assets/images/arsenal-home.jpg"
+    },
+    {
+      title: "Áo Đấu Arsenal Sân Khách 1886 (Away Kit)",
+      desc: "Phiên bản sân khách cao cấp tone màu xanh đêm phối vàng hoàng gia, họa tiết chìm dệt 3D và logo Adidas Originals cổ điển.",
+      tag: "Bản Sân Khách",
+      category: "away",
+      img: "assets/images/arsenal-away.jpg"
+    },
+    {
+      title: "Logo Ngoại Hạng Anh & No Room For Racism",
+      desc: "Bộ đôi patch tay áo ép nhiệt nhung nổi 3D bản quyền Premier League, biểu tượng đầu sư tử đội vương miện và thông điệp No Room For Racism chuẩn thi đấu chính thức.",
+      tag: "Badge Giải Đấu",
+      category: "pl-badge",
+      img: "assets/images/premier-league-badge.jpg"
+    },
+    {
+      title: 'Huy Hiệu Arsenal 1886 "Victoria Concordia Crescit"',
+      desc: 'Biểu tượng di sản kinh điển của Pháo thủ thành London với khẩu pháo thần công đỏ trên nền họa tiết hoàng gia và châm ngôn bất hủ "Chiến thắng đến từ sự hòa hợp".',
+      tag: "Huy hiệu Cổ điển 1886",
+      category: "badge",
+      img: "assets/images/arsenal-1886-crest.png"
+    },
+    {
+      title: "Logo Thương Hiệu Adidas Chính Hãng",
+      desc: "Thương hiệu thể thao hàng đầu thế giới với biểu tượng 3 sọc trứ danh, đối tác thiết kế và chế tác độc quyền bộ trang phục thi đấu Arsenal 1886 Edition đạt chuẩn UEFA.",
+      tag: "Thương Hiệu & Nhà Chế Tác",
+      category: "brand",
+      img: "assets/images/adidas-logo.png"
+    },
+    {
+      title: "Hộp Quà Arsenal FC Collector's Edition (Ultimate Fan Kit)",
+      desc: "Trọn bộ hộp quà sưu tầm cao cấp kỷ niệm mùa giải: Vali bọc nhung đỏ sang trọng, áo đấu chính hãng, khăn choàng cổ động, tất thi đấu, kỷ niệm chương Emirates Stadium, huy hiệu kim loại và sách ảnh lịch sử Arsenal.",
+      tag: "Hộp quà Sưu tầm",
+      category: "package",
+      img: "assets/images/arsenal-collector-box.jpg"
+    }
+  ];
+
+  function filterGallery(category, btn){
+    document.querySelectorAll('.g-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards = document.querySelectorAll('.gallery-card');
+    cards.forEach(card => {
+      if(category === 'all' || card.dataset.category === category){
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  function openLightbox(index){
+    const item = galleryData[index];
+    if(!item) return;
+    document.getElementById('lightbox-title').textContent = item.title;
+    document.getElementById('lightbox-desc').textContent = item.desc;
+    const visualBox = document.getElementById('lightbox-visual-box');
+    if(item.img){
+      visualBox.innerHTML = `<img src="${item.img}" alt="${item.title}" />`;
+    } else {
+      visualBox.innerHTML = item.svg;
+    }
+    document.getElementById('lightbox-overlay').classList.add('active');
+  }
+
+  function closeLightbox(e){
+    if(e.target === document.getElementById('lightbox-overlay')){
+      closeLightboxDirect();
+    }
+  }
+
+  function closeLightboxDirect(){
+    document.getElementById('lightbox-overlay').classList.remove('active');
+  }
+
+  /* ---------- GIỎ HÀNG (SHOPPING CART STATE) ---------- */
+  let cart = JSON.parse(localStorage.getItem('arsenal_cart') || '[]');
+
+  function saveCart(){
+    localStorage.setItem('arsenal_cart', JSON.stringify(cart));
+    renderCart();
+  }
+
+  function formatMoney(amount){
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount).replace('₫', '₫');
+  }
+
+  function addToCart(title, price, version = 'Home', size = selectedShowcaseSize){
+    const existingIndex = cart.findIndex(item => item.title === title && item.size === size && item.version === version);
+    if(existingIndex > -1){
+      cart[existingIndex].qty += 1;
+    } else {
+      cart.push({
+        id: Date.now(),
+        title: title,
+        price: price,
+        size: size,
+        version: version,
+        qty: 1
+      });
+    }
+    saveCart();
+    showToast(`Đã thêm vào giỏ hàng: ${title} (${size})`, 'success');
+    toggleCart(true);
+  }
+
+  function updateCartQty(index, delta){
+    if(!cart[index]) return;
+    cart[index].qty += delta;
+    if(cart[index].qty <= 0){
+      cart.splice(index, 1);
+    }
+    saveCart();
+  }
+
+  function removeCartItem(index){
+    cart.splice(index, 1);
+    saveCart();
+    showToast('Đã xóa sản phẩm khỏi giỏ hàng.');
+  }
+
+  function renderCart(){
+    const container = document.getElementById('cart-items-container');
+    const badge = document.getElementById('cart-count');
+    const subtotalEl = document.getElementById('cart-subtotal');
+    const totalEl = document.getElementById('cart-total-price');
+    const footer = document.getElementById('cart-footer');
+
+    const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
+    const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+    if(badge) badge.textContent = totalQty;
+    if(subtotalEl) subtotalEl.textContent = formatMoney(totalPrice);
+    if(totalEl) totalEl.textContent = formatMoney(totalPrice);
+
+    if(!container) return;
+
+    if(cart.length === 0){
+      container.innerHTML = `
+        <div class="cart-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          <p>Giỏ hàng của bạn đang trống</p>
+          <a href="#pricing" class="btn-ghost" onclick="toggleCart(false)">Khám phá bộ sưu tập</a>
+        </div>
+      `;
+      if(footer) footer.style.display = 'none';
+    } else {
+      if(footer) footer.style.display = 'block';
+      container.innerHTML = cart.map((item, idx) => `
+        <div class="cart-item">
+          <div class="cart-item-img">
+            <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+              <path d="M60 20 L20 45 L35 75 L55 65 L55 200 L145 200 L145 65 L165 75 L180 45 L140 20 L120 10 Q100 25 80 10 Z" fill="#1a1d24" stroke="#d81e3d" stroke-width="4"/>
+              <text x="100" y="130" text-anchor="middle" font-family="Big Shoulders Display" font-size="44" font-weight="800" fill="#e8c468">A</text>
+            </svg>
+          </div>
+          <div>
+            <div class="cart-item-title">${item.title}</div>
+            <div class="cart-item-meta">Size: ${item.size} · Bản: ${item.version}</div>
+            <div class="cart-item-price">${formatMoney(item.price)}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;">
+            <div class="cart-item-qty">
+              <button onclick="updateCartQty(${idx}, -1)">−</button>
+              <span>${item.qty}</span>
+              <button onclick="updateCartQty(${idx}, 1)">+</button>
+            </div>
+            <div class="cart-item-del" onclick="removeCartItem(${idx})">Xóa</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  function toggleCart(open = true){
+    const overlay = document.getElementById('cart-drawer-overlay');
+    if(open){
+      overlay.classList.add('active');
+    } else {
+      overlay.classList.remove('active');
+    }
+  }
+
+  function closeCart(e){
+    if(e.target === document.getElementById('cart-drawer-overlay')){
+      toggleCart(false);
+    }
+  }
+
+  document.getElementById('open-cart-btn').addEventListener('click', () => toggleCart(true));
+
+  /* ---------- MODAL ĐẶT HÀNG (CHECKOUT MODAL) ---------- */
+  let currentOrder = {
+    title: 'Áo Sân Nhà 1886',
+    price: 890000
+  };
+
+  function openOrderModal(title, price){
+    currentOrder.title = title;
+    currentOrder.price = price;
+    document.getElementById('order-pkg-name').textContent = title;
+    document.getElementById('order-pkg-price').textContent = formatMoney(price);
+    
+    // Set size according to showcase selected size
+    const sizeSelect = document.getElementById('order-size');
+    if(sizeSelect && selectedShowcaseSize) sizeSelect.value = selectedShowcaseSize;
+
+    // Reset views
+    document.getElementById('order-form-view').style.display = 'block';
+    document.getElementById('order-success-view').style.display = 'none';
+
+    toggleOrderModal(true);
+  }
+
+  function toggleOrderModal(open = true){
+    const overlay = document.getElementById('order-modal-overlay');
+    if(open){
+      overlay.classList.add('active');
+    } else {
+      overlay.classList.remove('active');
+    }
+  }
+
+  function closeOrderModal(e){
+    if(e.target === document.getElementById('order-modal-overlay')){
+      toggleOrderModal(false);
+    }
+  }
+
+  function proceedCartCheckout(){
+    if(cart.length === 0) return;
+    const totalCount = cart.reduce((a, b) => a + b.qty, 0);
+    const totalPrice = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+    toggleCart(false);
+    openOrderModal(`Giỏ hàng (${totalCount} sản phẩm)`, totalPrice);
+  }
+
+  function selectPayment(labelEl){
+    document.querySelectorAll('.pay-card').forEach(p => p.classList.remove('active'));
+    labelEl.classList.add('active');
+  }
+
+  function handleOrderSubmit(e){
+    e.preventDefault();
+    const name = document.getElementById('order-fullname').value;
+    const phone = document.getElementById('order-phone').value;
+    const address = document.getElementById('order-address').value;
+    const size = document.getElementById('order-size').value;
+    const cName = document.getElementById('order-custom-name').value;
+    const cNum = document.getElementById('order-custom-number').value;
+
+    const randomCode = 'ARS-' + Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('success-order-code').textContent = `Mã đơn hàng: #${randomCode}`;
+
+    // Switch view to success
+    document.getElementById('order-form-view').style.display = 'none';
+    document.getElementById('order-success-view').style.display = 'block';
+
+    // Clear cart if ordered
+    cart = [];
+    saveCart();
+
+    showToast(`Đặt hàng thành công! Mã đơn: #${randomCode}`, 'success');
+  }
+
+  /* ---------- TOAST UTILITY ---------- */
+  function showToast(message, type = 'info'){
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type === 'success' ? 'toast-success' : (type === 'danger' ? 'toast-danger' : '')}`;
+    toast.innerHTML = `
+      <span>${type === 'success' ? '✅' : '🔔'}</span>
+      <span>${message}</span>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.animation = 'toastOut .3s cubic-bezier(.16,1,.3,1) forwards';
+      setTimeout(() => toast.remove(), 300);
+    }, 3200);
+  }
+
+  /* ---------- HISTORY TAB SWITCHING ---------- */
+  function switchHistoryTab(tabId, btn){
+    document.querySelectorAll('.h-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    const targetPane = document.getElementById(`tab-${tabId}`);
+    if(targetPane){
+      targetPane.classList.add('active');
+    }
+  }
+
+  // Initialize cart on load
+  renderCart();
 </script>
 </body>
 </html>
