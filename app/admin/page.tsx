@@ -69,7 +69,7 @@ export default function AdminPage() {
   // Active Tab
   const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'gallery' | 'trophies' | 'timeline'>('orders');
   
-  // Realtime Data from Supabase
+  // Data States
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
@@ -129,7 +129,7 @@ export default function AdminPage() {
       if (data.success) {
         setIsAuthenticated(true);
         sessionStorage.setItem('arsenal_admin_logged', 'true');
-        showToast('Đăng nhập thành công! Chào mừng Quản trị viên.', 'success');
+        showToast('Đăng nhập thành công!', 'success');
       } else {
         setLoginError(data.message || 'Sai tên đăng nhập hoặc mật khẩu!');
       }
@@ -149,10 +149,10 @@ export default function AdminPage() {
     setIsAuthenticated(false);
     setUsernameInput('');
     setPasswordInput('');
-    showToast('Đã đăng xuất khỏi hệ thống quản trị', 'info');
+    showToast('Đã đăng xuất', 'info');
   };
 
-  // Generic Image Upload Handler
+  // Image Upload Handler
   const handleUploadImageFile = async (file: File, target: 'product' | 'gallery') => {
     if (!file) return;
     const formData = new FormData();
@@ -170,16 +170,16 @@ export default function AdminPage() {
       if (data.success && data.url) {
         if (target === 'product') {
           setNewProduct(prev => ({ ...prev, image_url: data.url }));
-          showToast('Đã tải và lưu hình ảnh sản phẩm thành công!', 'success');
+          showToast('Đã tải ảnh lên thành công', 'success');
         } else {
           setNewGallery(prev => ({ ...prev, image_url: data.url }));
-          showToast('Đã tải và lưu hình ảnh thư viện thành công!', 'success');
+          showToast('Đã tải ảnh lên thành công', 'success');
         }
       } else {
-        showToast('Lỗi tải ảnh: ' + (data.error || 'Vui lòng thử lại'), 'danger');
+        showToast(data.error || 'Lỗi khi tải ảnh', 'danger');
       }
     } catch (e) {
-      showToast('Lỗi kết nối khi tải ảnh lên máy chủ', 'danger');
+      showToast('Lỗi kết nối khi tải ảnh', 'danger');
     } finally {
       if (target === 'product') setIsUploadingProductImg(false);
       if (target === 'gallery') setIsUploadingGalleryImg(false);
@@ -197,7 +197,7 @@ export default function AdminPage() {
       const data = await res.json();
       if (data.success) {
         setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
-        showToast('Đã cập nhật trạng thái đơn hàng trên Supabase', 'success');
+        showToast('Đã cập nhật trạng thái đơn hàng', 'success');
         loadAllData();
       }
     } catch (e) {
@@ -206,13 +206,13 @@ export default function AdminPage() {
   };
 
   const handleDeleteOrder = async (id: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa đơn hàng này khỏi Supabase?')) return;
+    if (!confirm('Bạn có chắc muốn xóa đơn hàng này?')) return;
     try {
       const res = await fetch(`/api/orders?id=${id}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
         setOrders(orders.filter(o => o.id !== id));
-        showToast('Đã xóa đơn hàng thành công', 'info');
+        showToast('Đã xóa đơn hàng', 'info');
         loadAllData();
       }
     } catch (e) {
@@ -245,7 +245,7 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Đã thêm sản phẩm và lưu trữ hình ảnh vào Supabase!', 'success');
+        showToast('Đã thêm sản phẩm thành công', 'success');
         setNewProduct({
           name: '',
           price: 890000,
@@ -264,7 +264,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (!confirm('Xóa sản phẩm này khỏi Supabase?')) return;
+    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
     try {
       await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
       showToast('Đã xóa sản phẩm', 'info');
@@ -293,7 +293,7 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Đã thêm ảnh vào Thư viện Supabase!', 'success');
+        showToast('Đã thêm ảnh thành công', 'success');
         setNewGallery({
           title: '',
           desc: 'Hình ảnh chi tiết sắc nét chuẩn bộ sưu tập Arsenal 1886.',
@@ -309,10 +309,10 @@ export default function AdminPage() {
   };
 
   const handleDeleteGallery = async (id: string) => {
-    if (!confirm('Xóa mục ảnh này khỏi Supabase?')) return;
+    if (!confirm('Bạn có chắc muốn xóa ảnh này?')) return;
     try {
       await fetch(`/api/gallery?id=${id}`, { method: 'DELETE' });
-      showToast('Đã xóa mục ảnh', 'info');
+      showToast('Đã xóa ảnh', 'info');
       loadAllData();
     } catch (e) {
       showToast('Lỗi khi xóa ảnh', 'danger');
@@ -334,23 +334,23 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Thêm danh hiệu cúp thành công vào Supabase', 'success');
+        showToast('Đã thêm danh hiệu thành công', 'success');
         setNewTrophy({ title: '', count_label: '18x', years: '', desc: '', icon: '🛡️', is_highlight: false });
         loadAllData();
       }
     } catch (e) {
-      showToast('Lỗi khi thêm cúp', 'danger');
+      showToast('Lỗi khi thêm danh hiệu', 'danger');
     }
   };
 
   const handleDeleteTrophy = async (id: string) => {
-    if (!confirm('Xóa cúp này khỏi Supabase?')) return;
+    if (!confirm('Bạn có chắc muốn xóa danh hiệu này?')) return;
     try {
       await fetch(`/api/trophies?id=${id}`, { method: 'DELETE' });
       showToast('Đã xóa danh hiệu', 'info');
       loadAllData();
     } catch (e) {
-      showToast('Lỗi khi xóa cúp', 'danger');
+      showToast('Lỗi khi xóa danh hiệu', 'danger');
     }
   };
 
@@ -369,7 +369,7 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Thêm cột mốc lịch sử thành công vào Supabase', 'success');
+        showToast('Đã thêm cột mốc thành công', 'success');
         setNewTimeline({ year_label: '1886', title: '', content: '', is_highlight: false });
         loadAllData();
       }
@@ -379,7 +379,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteTimeline = async (id: string) => {
-    if (!confirm('Xóa cột mốc này khỏi Supabase?')) return;
+    if (!confirm('Bạn có chắc muốn xóa cột mốc này?')) return;
     try {
       await fetch(`/api/timeline?id=${id}`, { method: 'DELETE' });
       showToast('Đã xóa cột mốc', 'info');
@@ -392,12 +392,12 @@ export default function AdminPage() {
   if (authLoading) {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--mute)' }}>
-        Đang khởi động hệ thống quản trị...
+        Đang tải...
       </div>
     );
   }
 
-  // LOGIN SCREEN
+  // CLEAN LOGIN SCREEN
   if (!isAuthenticated) {
     return (
       <div style={{
@@ -405,14 +405,13 @@ export default function AdminPage() {
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24
       }}>
         <div style={{
-          maxWidth: 420, width: '100%', background: 'var(--card)', border: '1px solid var(--line-strong)',
+          maxWidth: 400, width: '100%', background: 'var(--card)', border: '1px solid var(--line-strong)',
           borderRadius: 16, padding: 36, boxShadow: '0 25px 50px rgba(0,0,0,0.8)', textAlign: 'center'
         }}>
           <img src="/assets/images/arsenal-1886-crest.png" alt="Arsenal 1886" style={{ width: 64, height: 64, objectFit: 'contain', margin: '0 auto 16px' }} />
-          <h2 style={{ fontFamily: 'Big Shoulders Display', fontSize: 28, fontWeight: 900, color: 'var(--gold)', letterSpacing: '0.05em', marginBottom: 6 }}>
-            QUẢN TRỊ ARSENAL 1886
+          <h2 style={{ fontFamily: 'Big Shoulders Display', fontSize: 28, fontWeight: 900, color: 'var(--gold)', letterSpacing: '0.05em', marginBottom: 20 }}>
+            QUẢN TRỊ VIÊN
           </h2>
-          <p style={{ color: 'var(--mute)', fontSize: 13.5, marginBottom: 24 }}>Vui lòng xác thực tài khoản quản trị để truy cập hệ thống.</p>
 
           {loginError && (
             <div style={{ background: 'var(--red-dim)', border: '1px solid var(--red)', color: '#ff6b81', padding: '10px 14px', borderRadius: 8, fontSize: 13, fontWeight: 700, marginBottom: 18, textAlign: 'left' }}>
@@ -422,22 +421,20 @@ export default function AdminPage() {
 
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16, textAlign: 'left' }}>
             <div>
-              <label style={{ fontSize: 12, color: 'var(--mute)', display: 'block', marginBottom: 6 }}>Tên đăng nhập (Username)</label>
+              <label style={{ fontSize: 12, color: 'var(--mute)', display: 'block', marginBottom: 6 }}>Tên đăng nhập</label>
               <input
                 required
                 type="text"
-                placeholder="Nhập tên tài khoản..."
                 value={usernameInput}
                 onChange={e => setUsernameInput(e.target.value)}
                 style={{ width: '100%', padding: '12px 14px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 8, color: '#fff', fontSize: 14 }}
               />
             </div>
             <div>
-              <label style={{ fontSize: 12, color: 'var(--mute)', display: 'block', marginBottom: 6 }}>Mật khẩu (Password)</label>
+              <label style={{ fontSize: 12, color: 'var(--mute)', display: 'block', marginBottom: 6 }}>Mật khẩu</label>
               <input
                 required
                 type="password"
-                placeholder="Nhập mật khẩu..."
                 value={passwordInput}
                 onChange={e => setPasswordInput(e.target.value)}
                 style={{ width: '100%', padding: '12px 14px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 8, color: '#fff', fontSize: 14 }}
@@ -447,17 +444,17 @@ export default function AdminPage() {
             <button
               type="submit"
               style={{
-                marginTop: 8, background: 'var(--red)', color: '#fff', padding: '14px',
+                marginTop: 6, background: 'var(--red)', color: '#fff', padding: '14px',
                 borderRadius: 8, fontWeight: 800, fontSize: 15, cursor: 'pointer', border: 'none'
               }}
             >
-              Đăng Nhập Quản Trị →
+              Đăng Nhập
             </button>
           </form>
 
           <div style={{ marginTop: 24, borderTop: '1px solid var(--line)', paddingTop: 16 }}>
             <Link href="/" style={{ fontSize: 13, color: 'var(--mute)', textDecoration: 'none' }}>
-              ← Quay lại Trang Chủ Khách Hàng
+              ← Trang Chủ
             </Link>
           </div>
         </div>
@@ -465,7 +462,7 @@ export default function AdminPage() {
     );
   }
 
-  // AUTHENTICATED DASHBOARD
+  // CLEAN AUTHENTICATED DASHBOARD
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', padding: '30px 24px' }}>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
@@ -475,17 +472,9 @@ export default function AdminPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <img src="/assets/images/arsenal-1886-crest.png" alt="Arsenal" style={{ width: 44, height: 44 }} />
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <h1 style={{ fontFamily: 'Big Shoulders Display', fontSize: 32, fontWeight: 900, color: 'var(--gold)', lineHeight: 1 }}>
-                  ARSENAL 1886 — ADMIN PORTAL
-                </h1>
-                <span style={{ background: 'var(--gold-dim)', color: 'var(--gold)', border: '1px solid var(--gold)', fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 12 }}>
-                  SUPABASE POSTGRESQL LIVE
-                </span>
-              </div>
-              <div style={{ fontFamily: 'JetBrains Mono', fontSize: 11, color: 'var(--mute)', marginTop: 2 }}>
-                Đang đăng nhập: <b style={{ color: 'var(--cream)' }}>admin</b> (Super Administrator) · Hỗ trợ tải & lưu trữ ảnh trực tiếp
-              </div>
+              <h1 style={{ fontFamily: 'Big Shoulders Display', fontSize: 32, fontWeight: 900, color: 'var(--gold)', lineHeight: 1 }}>
+                ARSENAL 1886
+              </h1>
             </div>
           </div>
 
@@ -494,20 +483,20 @@ export default function AdminPage() {
               onClick={loadAllData}
               style={{ background: 'var(--card-2)', border: '1px solid var(--line-strong)', color: 'var(--text)', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 700 }}
             >
-              🔄 Tải lại dữ liệu
+              🔄 Tải lại
             </button>
             <Link
               href="/"
               target="_blank"
               style={{ background: 'var(--card-2)', border: '1px solid var(--line-strong)', color: 'var(--gold)', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 700, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}
             >
-              🌐 Mở Trang Chủ
+              🌐 Xem Trang Chủ
             </Link>
             <button
               onClick={handleLogout}
               style={{ background: 'var(--red-dim)', border: '1px solid var(--red)', color: '#ff6b81', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}
             >
-              🚪 Đăng xuất
+              Đăng xuất
             </button>
           </div>
         </div>
@@ -543,11 +532,11 @@ export default function AdminPage() {
         {/* TABS NAVIGATION */}
         <div style={{ display: 'flex', gap: 10, borderBottom: '1px solid var(--line)', paddingBottom: 14, marginBottom: 28, flexWrap: 'wrap' }}>
           {[
-            { id: 'orders', label: `📦 Đơn Hàng (${orders.length})` },
-            { id: 'products', label: `👕 Sản Phẩm & Ảnh (${products.length})` },
-            { id: 'gallery', label: `🖼️ Thư Viện Ảnh (${gallery.length})` },
-            { id: 'trophies', label: `🏆 Cúp & Danh Hiệu (${trophies.length})` },
-            { id: 'timeline', label: `⏳ Lịch Sử (${timeline.length})` },
+            { id: 'orders', label: `Đơn Hàng (${orders.length})` },
+            { id: 'products', label: `Sản Phẩm (${products.length})` },
+            { id: 'gallery', label: `Thư Viện Ảnh (${gallery.length})` },
+            { id: 'trophies', label: `Cúp & Danh Hiệu (${trophies.length})` },
+            { id: 'timeline', label: `Lịch Sử (${timeline.length})` },
           ].map(tab => (
             <button
               key={tab.id}
@@ -568,13 +557,12 @@ export default function AdminPage() {
         {activeTab === 'orders' && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)' }}>Danh Sách Đơn Hàng (Realtime Supabase)</h3>
-              <span style={{ fontSize: 13, color: 'var(--mute)' }}>Tự động đồng bộ với Cloud PostgreSQL</span>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)' }}>Danh Sách Đơn Hàng</h3>
             </div>
 
             {orders.length === 0 ? (
               <div style={{ background: 'var(--card)', padding: 40, borderRadius: 12, textAlign: 'center', color: 'var(--mute)' }}>
-                Chưa có đơn hàng nào trong cơ sở dữ liệu Supabase. Hãy đặt thử trên trang chủ!
+                Chưa có đơn hàng nào.
               </div>
             ) : (
               <div style={{ overflowX: 'auto', background: 'var(--card)', borderRadius: 12, border: '1px solid var(--line)' }}>
@@ -645,7 +633,7 @@ export default function AdminPage() {
                             onClick={() => handleDeleteOrder(ord.id)}
                             style={{ color: 'var(--red)', background: 'var(--red-dim)', padding: '6px 10px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontWeight: 700 }}
                           >
-                            🗑️ Xóa
+                            Xóa
                           </button>
                         </td>
                       </tr>
@@ -661,7 +649,7 @@ export default function AdminPage() {
         {activeTab === 'products' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 24 }}>
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Danh Sách Sản Phẩm & Hình Ảnh Trong DB</h3>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Danh Sách Sản Phẩm</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {products.map((prod, idx) => (
                   <div key={prod.id || idx} style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 10, padding: 14, display: 'flex', gap: 14, alignItems: 'center' }}>
@@ -677,7 +665,7 @@ export default function AdminPage() {
                       onClick={() => handleDeleteProduct(prod.id)}
                       style={{ color: 'var(--red)', background: 'var(--red-dim)', padding: '6px 10px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontWeight: 700 }}
                     >
-                      🗑️ Xóa
+                      Xóa
                     </button>
                   </div>
                 ))}
@@ -686,17 +674,16 @@ export default function AdminPage() {
 
             {/* Add Product Form With Image Upload */}
             <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: 24 }}>
-              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Sản Phẩm & Tải Hình Ảnh Lên</h4>
+              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Sản Phẩm Mới</h4>
               
               {/* IMAGE UPLOAD BOX FOR PRODUCT */}
-              <div style={{ background: 'var(--card-2)', border: '1px dashed var(--gold)', borderRadius: 10, padding: 16, marginBottom: 16, textAlign: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 10 }}>
-                  <div style={{ width: 80, height: 80, background: '#090a0c', border: '1px solid var(--line)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+              <div style={{ background: 'var(--card-2)', border: '1px dashed var(--gold)', borderRadius: 10, padding: 16, marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div style={{ width: 72, height: 72, background: '#090a0c', border: '1px solid var(--line)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                     <img src={newProduct.image_url} alt="Preview" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
                   </div>
-                  <div style={{ textAlign: 'left', flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cream)' }}>Lưu Trữ Hình Ảnh Sản Phẩm</div>
-                    <div style={{ fontSize: 11.5, color: 'var(--mute)', marginBottom: 8 }}>Hỗ trợ JPG, PNG, WEBP lưu trực tiếp vào máy chủ</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cream)', marginBottom: 6 }}>Hình ảnh sản phẩm</div>
                     <input
                       type="file"
                       ref={productFileInputRef}
@@ -717,12 +704,9 @@ export default function AdminPage() {
                         fontWeight: 800, fontSize: 12, cursor: isUploadingProductImg ? 'not-allowed' : 'pointer'
                       }}
                     >
-                      {isUploadingProductImg ? '⏳ Đang tải ảnh...' : '📁 Chọn ảnh từ máy tính'}
+                      {isUploadingProductImg ? 'Đang tải lên...' : '📁 Tải ảnh lên'}
                     </button>
                   </div>
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--mute-2)', wordBreak: 'break-all' }}>
-                  URL lưu trữ: <b style={{ color: 'var(--gold)' }}>{newProduct.image_url}</b>
                 </div>
               </div>
 
@@ -732,7 +716,6 @@ export default function AdminPage() {
                   <input
                     required
                     type="text"
-                    placeholder="VD: Áo Đấu Arsenal Home 1886 Bản Player"
                     value={newProduct.name}
                     onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
                     style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
@@ -768,14 +751,13 @@ export default function AdminPage() {
                     <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tag nhãn</label>
                     <input
                       type="text"
-                      placeholder="VD: Bán Chạy Nhất"
                       value={newProduct.tag}
                       onChange={e => setNewProduct({ ...newProduct, tag: e.target.value })}
                       style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tùy chỉnh URL ảnh (Tùy chọn)</label>
+                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>URL ảnh</label>
                     <input
                       type="text"
                       value={newProduct.image_url}
@@ -785,7 +767,7 @@ export default function AdminPage() {
                   </div>
                 </div>
                 <div>
-                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Mô tả ngắn</label>
+                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Mô tả</label>
                   <textarea
                     rows={2}
                     value={newProduct.description}
@@ -797,18 +779,18 @@ export default function AdminPage() {
                   type="submit"
                   style={{ background: 'var(--gold)', color: '#000', padding: '12px', borderRadius: 8, fontWeight: 800, cursor: 'pointer', marginTop: 8 }}
                 >
-                  Lưu Sản Phẩm & Ảnh Vào Supabase
+                  Lưu Sản Phẩm
                 </button>
               </form>
             </div>
           </div>
         )}
 
-        {/* TAB 3: GALLERY CRUD & IMAGE STORAGE */}
+        {/* TAB 3: GALLERY CRUD */}
         {activeTab === 'gallery' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 24 }}>
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Thư Viện Ảnh (Realtime Supabase)</h3>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Thư Viện Ảnh</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 {gallery.map((g, idx) => (
                   <div key={g.id || idx} style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 8, padding: 12, position: 'relative' }}>
@@ -826,19 +808,18 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Add Gallery Form with Upload */}
+            {/* Add Gallery Form */}
             <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: 24 }}>
-              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Ảnh Mới Vào Thư Viện</h4>
+              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Ảnh Mới</h4>
               
               {/* IMAGE UPLOAD BOX FOR GALLERY */}
-              <div style={{ background: 'var(--card-2)', border: '1px dashed var(--gold)', borderRadius: 10, padding: 16, marginBottom: 16, textAlign: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 10 }}>
-                  <div style={{ width: 80, height: 80, background: '#090a0c', border: '1px solid var(--line)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+              <div style={{ background: 'var(--card-2)', border: '1px dashed var(--gold)', borderRadius: 10, padding: 16, marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div style={{ width: 72, height: 72, background: '#090a0c', border: '1px solid var(--line)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                     <img src={newGallery.image_url} alt="Preview" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
                   </div>
-                  <div style={{ textAlign: 'left', flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cream)' }}>Tải Tệp Ảnh Mới</div>
-                    <div style={{ fontSize: 11.5, color: 'var(--mute)', marginBottom: 8 }}>Lưu trữ hình ảnh vào thư mục máy chủ công khai</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--cream)', marginBottom: 6 }}>Hình ảnh</div>
                     <input
                       type="file"
                       ref={galleryFileInputRef}
@@ -859,12 +840,9 @@ export default function AdminPage() {
                         fontWeight: 800, fontSize: 12, cursor: isUploadingGalleryImg ? 'not-allowed' : 'pointer'
                       }}
                     >
-                      {isUploadingGalleryImg ? '⏳ Đang tải ảnh...' : '📁 Tải ảnh từ máy tính'}
+                      {isUploadingGalleryImg ? 'Đang tải lên...' : '📁 Tải ảnh lên'}
                     </button>
                   </div>
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--mute-2)', wordBreak: 'break-all' }}>
-                  URL lưu trữ: <b style={{ color: 'var(--gold)' }}>{newGallery.image_url}</b>
                 </div>
               </div>
 
@@ -874,7 +852,6 @@ export default function AdminPage() {
                   <input
                     required
                     type="text"
-                    placeholder="VD: Cận cảnh đường may cổ áo đấu 1886"
                     value={newGallery.title}
                     onChange={e => setNewGallery({ ...newGallery, title: e.target.value })}
                     style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
@@ -882,32 +859,32 @@ export default function AdminPage() {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
-                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Danh mục lọc</label>
+                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Danh mục</label>
                     <select
                       value={newGallery.category}
                       onChange={e => setNewGallery({ ...newGallery, category: e.target.value })}
                       style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
                     >
-                      <option value="home">home (Sân Nhà)</option>
-                      <option value="away">away (Sân Khách)</option>
-                      <option value="pl-badge">pl-badge (Logo Ngoại Hạng)</option>
-                      <option value="badge">badge (Huy Hiệu 1886)</option>
-                      <option value="brand">brand (Thương Hiệu Adidas)</option>
-                      <option value="package">package (Hộp Quà Sưu Tầm)</option>
+                      <option value="home">Sân Nhà (home)</option>
+                      <option value="away">Sân Khách (away)</option>
+                      <option value="pl-badge">Logo Ngoại Hạng (pl-badge)</option>
+                      <option value="badge">Huy Hiệu 1886 (badge)</option>
+                      <option value="brand">Thương Hiệu Adidas (brand)</option>
+                      <option value="package">Hộp Quà Sưu Tầm (package)</option>
                     </select>
                   </div>
                   <div>
-                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tag nhãn</label>
+                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tag</label>
                     <input
                       type="text"
                       value={newGallery.tag}
-                      onChange={e => setNewGallery({ ...newGallery, tag: e.target.value.toUpperCase() })}
+                      onChange={e => setNewGallery({ ...newGallery, tag: e.target.value })}
                       style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
                     />
                   </div>
                 </div>
                 <div>
-                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Mô tả chi tiết</label>
+                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Mô tả</label>
                   <textarea
                     rows={2}
                     value={newGallery.desc}
@@ -919,7 +896,7 @@ export default function AdminPage() {
                   type="submit"
                   style={{ background: 'var(--gold)', color: '#000', padding: '12px', borderRadius: 8, fontWeight: 800, cursor: 'pointer', marginTop: 8 }}
                 >
-                  Lưu Ảnh Vào Thư Viện Supabase
+                  Lưu Ảnh
                 </button>
               </form>
             </div>
@@ -930,7 +907,7 @@ export default function AdminPage() {
         {activeTab === 'trophies' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24 }}>
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Bộ Sưu Tập Cúp Vô Địch</h3>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Bộ Sưu Tập Cúp</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {trophies.map((tr, idx) => (
                   <div key={tr.id || idx} style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 8, padding: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -943,7 +920,7 @@ export default function AdminPage() {
                       onClick={() => handleDeleteTrophy(tr.id)}
                       style={{ color: 'var(--red)', background: 'var(--red-dim)', padding: '6px 10px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontWeight: 700 }}
                     >
-                      🗑️ Xóa
+                      Xóa
                     </button>
                   </div>
                 ))}
@@ -952,14 +929,13 @@ export default function AdminPage() {
 
             {/* Add Trophy Form */}
             <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: 24 }}>
-              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Cúp / Danh Hiệu</h4>
+              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Danh Hiệu</h4>
               <form onSubmit={handleAddTrophy} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div>
-                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tên giải đấu / Cúp *</label>
+                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tên giải đấu *</label>
                   <input
                     required
                     type="text"
-                    placeholder="VD: Siêu Cúp Anh (Community Shield)"
                     value={newTrophy.title}
                     onChange={e => setNewTrophy({ ...newTrophy, title: e.target.value })}
                     style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
@@ -967,18 +943,17 @@ export default function AdminPage() {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
-                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Số lần vô địch *</label>
+                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Số lần *</label>
                     <input
                       required
                       type="text"
-                      placeholder="VD: 18x"
                       value={newTrophy.count_label}
                       onChange={e => setNewTrophy({ ...newTrophy, count_label: e.target.value })}
                       style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Biểu tượng (Emoji)</label>
+                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Biểu tượng</label>
                     <input
                       type="text"
                       value={newTrophy.icon}
@@ -988,17 +963,16 @@ export default function AdminPage() {
                   </div>
                 </div>
                 <div>
-                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Các năm đăng quang</label>
+                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Năm</label>
                   <input
                     type="text"
-                    placeholder="VD: 1930, 1931, ..., 2023"
                     value={newTrophy.years}
                     onChange={e => setNewTrophy({ ...newTrophy, years: e.target.value })}
                     style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Mô tả ý nghĩa danh hiệu</label>
+                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Mô tả</label>
                   <textarea
                     rows={2}
                     value={newTrophy.desc}
@@ -1010,7 +984,7 @@ export default function AdminPage() {
                   type="submit"
                   style={{ background: 'var(--gold)', color: '#000', padding: '12px', borderRadius: 8, fontWeight: 800, cursor: 'pointer', marginTop: 8 }}
                 >
-                  Lưu Danh Hiệu Vào Supabase
+                  Lưu Danh Hiệu
                 </button>
               </form>
             </div>
@@ -1021,7 +995,7 @@ export default function AdminPage() {
         {activeTab === 'timeline' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24 }}>
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Cột Mốc Lịch Sử Ra Đời</h3>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Cột Mốc Lịch Sử</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {timeline.map((ev, idx) => (
                   <div key={ev.id || idx} style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 8, padding: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1033,7 +1007,7 @@ export default function AdminPage() {
                       onClick={() => handleDeleteTimeline(ev.id)}
                       style={{ color: 'var(--red)', background: 'var(--red-dim)', padding: '6px 10px', borderRadius: 6, fontSize: 12, cursor: 'pointer', fontWeight: 700 }}
                     >
-                      🗑️ Xóa
+                      Xóa
                     </button>
                   </div>
                 ))}
@@ -1042,26 +1016,24 @@ export default function AdminPage() {
 
             {/* Add Milestone Form */}
             <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: 24 }}>
-              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Cột Mốc Lịch Sử</h4>
+              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Cột Mốc</h4>
               <form onSubmit={handleAddTimeline} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 10 }}>
                   <div>
-                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Năm / Thời kỳ *</label>
+                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Năm *</label>
                     <input
                       required
                       type="text"
-                      placeholder="VD: 1886"
                       value={newTimeline.year_label}
                       onChange={e => setNewTimeline({ ...newTimeline, year_label: e.target.value })}
                       style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
                     />
                   </div>
                   <div>
-                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tiêu đề cột mốc *</label>
+                    <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tiêu đề *</label>
                     <input
                       required
                       type="text"
-                      placeholder="VD: Dial Square & Những phát pháo đầu tiên"
                       value={newTimeline.title}
                       onChange={e => setNewTimeline({ ...newTimeline, title: e.target.value })}
                       style={{ width: '100%', padding: '8px 12px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 6, color: '#fff' }}
@@ -1069,7 +1041,7 @@ export default function AdminPage() {
                   </div>
                 </div>
                 <div>
-                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Nội dung lịch sử</label>
+                  <label style={{ fontSize: 12, color: 'var(--mute)' }}>Nội dung</label>
                   <textarea
                     rows={3}
                     value={newTimeline.content}
@@ -1081,7 +1053,7 @@ export default function AdminPage() {
                   type="submit"
                   style={{ background: 'var(--gold)', color: '#000', padding: '12px', borderRadius: 8, fontWeight: 800, cursor: 'pointer', marginTop: 8 }}
                 >
-                  Lưu Cột Mốc Vào Supabase
+                  Lưu Cột Mốc
                 </button>
               </form>
             </div>
