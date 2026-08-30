@@ -165,8 +165,8 @@ export default function HomePage() {
     showToast('Đã xóa sản phẩm khỏi giỏ hàng', 'info');
   };
 
-  const cartTotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+  const cartTotal = cart.reduce((acc: number, item: CartItem) => acc + item.price * item.quantity, 0);
+  const cartCount = cart.reduce((acc: number, item: CartItem) => acc + item.quantity, 0);
 
   const handleQuickBuy = (productName: string, price: number, version: string, size: string) => {
     setFormData(prev => ({ ...prev, version, size }));
@@ -178,7 +178,7 @@ export default function HomePage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const itemsToOrder = cart.length > 0 ? cart : [
+      const itemsToOrder: any[] = cart.length > 0 ? cart : [
         {
           id: 'single-' + Date.now(),
           name: `Áo Đấu Arsenal 1886 (${formData.version})`,
@@ -189,7 +189,7 @@ export default function HomePage() {
         }
       ];
 
-      const total = itemsToOrder.reduce((acc, it) => acc + it.price * it.quantity, 0);
+      const total = itemsToOrder.reduce((acc: number, it: any) => acc + Number(it.price) * Number(it.quantity), 0);
 
       const res = await fetch('/api/orders', {
         method: 'POST',
