@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 
 interface Product {
   id: string;
@@ -71,6 +70,7 @@ export default function HomePage() {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
   const [orderSuccessCode, setOrderSuccessCode] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   
   // Order Form
   const [formData, setFormData] = useState({
@@ -95,11 +95,11 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    // Load data from SQLite DB APIs
-    fetch('/api/products').then(res => res.json()).then(res => { if (res.success) setProducts(res.data); }).catch(() => {});
-    fetch('/api/gallery').then(res => res.json()).then(res => { if (res.success) setGallery(res.data); }).catch(() => {});
-    fetch('/api/trophies').then(res => res.json()).then(res => { if (res.success) setTrophies(res.data); }).catch(() => {});
-    fetch('/api/timeline').then(res => res.json()).then(res => { if (res.success) setTimeline(res.data); }).catch(() => {});
+    // Load real live data from Supabase PostgreSQL via API
+    fetch('/api/products').then(res => res.json()).then(res => { if (res.success && res.data?.length) setProducts(res.data); }).catch(() => {});
+    fetch('/api/gallery').then(res => res.json()).then(res => { if (res.success && res.data?.length) setGallery(res.data); }).catch(() => {});
+    fetch('/api/trophies').then(res => res.json()).then(res => { if (res.success && res.data?.length) setTrophies(res.data); }).catch(() => {});
+    fetch('/api/timeline').then(res => res.json()).then(res => { if (res.success && res.data?.length) setTimeline(res.data); }).catch(() => {});
 
     // Load Cart from localStorage
     try {
@@ -176,6 +176,7 @@ export default function HomePage() {
 
   const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const itemsToOrder = cart.length > 0 ? cart : [
         {
@@ -211,10 +212,12 @@ export default function HomePage() {
         saveCartState([]);
         showToast(`Đặt hàng thành công! Mã đơn: #${data.data.order_code}`, 'success');
       } else {
-        showToast('Có lỗi xảy ra khi tạo đơn hàng.', 'danger');
+        showToast('Có lỗi xảy ra khi tạo đơn hàng: ' + (data.error || 'Vui lòng thử lại'), 'danger');
       }
     } catch (err) {
-      showToast('Lỗi kết nối máy chủ.', 'danger');
+      showToast('Lỗi kết nối máy chủ dữ liệu.', 'danger');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -224,7 +227,7 @@ export default function HomePage() {
 
   return (
     <div style={{ position: 'relative', minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      {/* NAVBAR */}
+      {/* NAVBAR (WITHOUT ADMIN BUTTON AS REQUESTED) */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 1000,
         background: 'rgba(10, 11, 13, 0.85)', backdropFilter: 'blur(16px)',
@@ -239,21 +242,15 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
             <a href="#features" style={{ fontSize: 14, fontWeight: 600, color: 'var(--mute)' }}>Đặc quyền</a>
             <a href="#showcase" style={{ fontSize: 14, fontWeight: 600, color: 'var(--mute)' }}>Sản phẩm</a>
             <a href="#gallery" style={{ fontSize: 14, fontWeight: 600, color: 'var(--mute)' }}>Thư viện ảnh</a>
             <a href="#history-honours" style={{ fontSize: 14, fontWeight: 600, color: 'var(--gold)' }}>Lịch sử & Cúp</a>
             <a href="#pricing" style={{ fontSize: 14, fontWeight: 600, color: 'var(--mute)' }}>Bảng giá</a>
-            <Link href="/admin" style={{
-              fontSize: 13, fontWeight: 700, color: 'var(--gold)',
-              background: 'var(--gold-dim)', padding: '6px 14px', borderRadius: 20, border: '1px solid var(--gold)'
-            }}>
-              ⚙️ Quản trị Admin
-            </Link>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <button
               onClick={() => setIsCartOpen(true)}
               style={{
@@ -545,7 +542,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* GALLERY SECTION */}
+      {/* GALLERY SECTION (LOADED LIVE FROM SUPABASE) */}
       <section id="gallery" style={{ padding: '90px 24px', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <div style={{ fontFamily: 'JetBrains Mono', fontSize: 12, color: 'var(--gold)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Thư viện ảnh chi tiết</div>
@@ -607,7 +604,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* HISTORY & TROPHY CABINET SECTION */}
+      {/* HISTORY & TROPHY CABINET SECTION (LOADED LIVE FROM SUPABASE) */}
       <section id="history-honours" style={{
         padding: '90px 24px',
         background: 'radial-gradient(circle at top right, rgba(216,30,61,0.08), transparent 45%), radial-gradient(circle at bottom left, rgba(232,196,104,0.06), transparent 50%), var(--bg-elev)',
@@ -759,7 +756,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* PRICING SECTION */}
+      {/* PRICING SECTION (LOADED LIVE FROM SUPABASE) */}
       <section id="pricing" style={{ padding: '90px 24px', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 50 }}>
           <div style={{ fontFamily: 'JetBrains Mono', fontSize: 12, color: 'var(--gold)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Bảng giá</div>
@@ -797,7 +794,7 @@ export default function HomePage() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 30 }}>
-                  {prod.features.map((feat, fIdx) => (
+                  {prod.features && prod.features.map((feat, fIdx) => (
                     <div key={fIdx} style={{ fontSize: 14, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ color: 'var(--success)' }}>✓</span> {feat}
                     </div>
@@ -831,7 +828,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FOOTER */}
+      {/* FOOTER (NO ADMIN BUTTON) */}
       <footer style={{ background: '#07080a', borderTop: '1px solid var(--line)', padding: '60px 24px 40px', color: 'var(--mute)', fontSize: 14 }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -839,9 +836,6 @@ export default function HomePage() {
             <span style={{ color: 'var(--cream)', fontWeight: 800, fontFamily: 'Big Shoulders Display', fontSize: 18 }}>ARSENAL 1886 COLLECTION</span>
           </div>
           <div>© 2026 Arsenal 1886 Heritage Edition. All Rights Reserved.</div>
-          <Link href="/admin" style={{ color: 'var(--gold)', fontWeight: 700 }}>
-            Quản trị hệ thống (Admin Portal) →
-          </Link>
         </div>
       </footer>
 
@@ -938,7 +932,7 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* CHECKOUT MODAL */}
+      {/* CHECKOUT MODAL (SAVES DIRECTLY TO SUPABASE) */}
       {isOrderModalOpen && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 3500, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 16, maxWidth: 540, width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: 32, position: 'relative' }}>
@@ -956,7 +950,7 @@ export default function HomePage() {
                   ĐẶT HÀNG THÀNH CÔNG!
                 </h3>
                 <p style={{ color: 'var(--mute)', fontSize: 15, marginBottom: 20 }}>
-                  Cảm ơn bạn đã lựa chọn bộ sưu tập Arsenal 1886. Đơn hàng của bạn đã được ghi nhận vào hệ thống.
+                  Cảm ơn bạn đã lựa chọn bộ sưu tập Arsenal 1886. Đơn hàng của bạn đã được ghi nhận trực tiếp vào hệ thống.
                 </p>
                 <div style={{
                   background: 'var(--card-2)', border: '1px dashed var(--gold)',
@@ -1088,12 +1082,14 @@ export default function HomePage() {
 
                   <button
                     type="submit"
+                    disabled={isSubmitting}
                     style={{
                       marginTop: 10, background: 'var(--red)', color: '#fff', padding: '14px',
-                      borderRadius: 8, fontWeight: 800, fontSize: 16, cursor: 'pointer', border: 'none'
+                      borderRadius: 8, fontWeight: 800, fontSize: 16, cursor: isSubmitting ? 'not-allowed' : 'pointer', border: 'none',
+                      opacity: isSubmitting ? 0.7 : 1
                     }}
                   >
-                    Xác nhận đặt hàng →
+                    {isSubmitting ? 'Đang gửi đơn hàng...' : 'Xác nhận đặt hàng →'}
                   </button>
                 </form>
               </div>

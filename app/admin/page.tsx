@@ -59,9 +59,17 @@ interface TimelineEvent {
 }
 
 export default function AdminPage() {
+  // Authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [authLoading, setAuthLoading] = useState<boolean>(true);
+  const [usernameInput, setUsernameInput] = useState<string>('admin');
+  const [passwordInput, setPasswordInput] = useState<string>('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  // Active Tab
   const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'gallery' | 'trophies' | 'timeline'>('orders');
   
-  // Data states
+  // Realtime Data from Supabase
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
@@ -77,18 +85,66 @@ export default function AdminPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
+  useEffect(() => {
+    // Check saved session
+    try {
+      const savedAuth = sessionStorage.getItem('arsenal_admin_logged');
+      if (savedAuth === 'true') {
+        setIsAuthenticated(true);
+      }
+    } catch (e) {}
+    setAuthLoading(false);
+  }, []);
+
   const loadAllData = () => {
-    fetch('/api/orders').then(r => r.json()).then(d => { if (d.success) setOrders(d.data); });
-    fetch('/api/products').then(r => r.json()).then(d => { if (d.success) setProducts(d.data); });
-    fetch('/api/gallery').then(r => r.json()).then(d => { if (d.success) setGallery(d.data); });
-    fetch('/api/trophies').then(r => r.json()).then(d => { if (d.success) setTrophies(d.data); });
-    fetch('/api/timeline').then(r => r.json()).then(d => { if (d.success) setTimeline(d.data); });
-    fetch('/api/stats').then(r => r.json()).then(d => { if (d.success) setStats(d.data); });
+    fetch('/api/orders').then(r => r.json()).then(d => { if (d.success) setOrders(d.data || []); }).catch(() => {});
+    fetch('/api/products').then(r => r.json()).then(d => { if (d.success) setProducts(d.data || []); }).catch(() => {});
+    fetch('/api/gallery').then(r => r.json()).then(d => { if (d.success) setGallery(d.data || []); }).catch(() => {});
+    fetch('/api/trophies').then(r => r.json()).then(d => { if (d.success) setTrophies(d.data || []); }).catch(() => {});
+    fetch('/api/timeline').then(r => r.json()).then(d => { if (d.success) setTimeline(d.data || []); }).catch(() => {});
+    fetch('/api/stats').then(r => r.json()).then(d => { if (d.success) setStats(d.data); }).catch(() => {});
   };
 
   useEffect(() => {
-    loadAllData();
-  }, []);
+    if (isAuthenticated) {
+      loadAllData();
+    }
+  }, [isAuthenticated]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError(null);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: usernameInput, password: passwordInput })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIsAuthenticated(true);
+        sessionStorage.setItem('arsenal_admin_logged', 'true');
+        showToast('Đăng nhập thành công! Chào mừng Quản trị viên.', 'success');
+      } else {
+        setLoginError(data.message || 'Sai tên đăng nhập hoặc mật khẩu!');
+      }
+    } catch (err) {
+      if (usernameInput === 'admin' && passwordInput === '12345') {
+        setIsAuthenticated(true);
+        sessionStorage.setItem('arsenal_admin_logged', 'true');
+        showToast('Đăng nhập thành công!', 'success');
+      } else {
+        setLoginError('Sai tên đăng nhập hoặc mật khẩu!');
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('arsenal_admin_logged');
+    setIsAuthenticated(false);
+    setPasswordInput('');
+    showToast('Đã đăng xuất khỏi hệ thống quản trị', 'info');
+  };
 
   // Handlers for Orders
   const handleUpdateOrderStatus = async (id: string, newStatus: string) => {
@@ -101,7 +157,7 @@ export default function AdminPage() {
       const data = await res.json();
       if (data.success) {
         setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
-        showToast('Đã cập nhật trạng thái đơn hàng', 'success');
+        showToast('Đã cập nhật trạng thái đơn hàng trên Supabase', 'success');
         loadAllData();
       }
     } catch (e) {
@@ -110,13 +166,13 @@ export default function AdminPage() {
   };
 
   const handleDeleteOrder = async (id: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) return;
+    if (!confirm('Bạn có chắc chắn muốn xóa đơn hàng này khỏi Supabase?')) return;
     try {
       const res = await fetch(`/api/orders?id=${id}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
         setOrders(orders.filter(o => o.id !== id));
-        showToast('Đã xóa đơn hàng', 'info');
+        showToast('Đã xóa đơn hàng thành công', 'info');
         loadAllData();
       }
     } catch (e) {
@@ -142,7 +198,7 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Thêm sản phẩm thành công', 'success');
+        showToast('Thêm sản phẩm thành công vào Supabase', 'success');
         setNewProduct({ name: '', price: 890000, version: 'Home', tag: 'MỚI', description: '', features: 'Vải thi đấu, Thêu tên số', image_url: '/assets/images/arsenal-home.jpg', is_featured: false });
         loadAllData();
       }
@@ -152,7 +208,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (!confirm('Xóa sản phẩm này?')) return;
+    if (!confirm('Xóa sản phẩm này khỏi Supabase?')) return;
     try {
       await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
       showToast('Đã xóa sản phẩm', 'info');
@@ -177,7 +233,7 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Thêm ảnh thư viện thành công', 'success');
+        showToast('Thêm ảnh thư viện thành công vào Supabase', 'success');
         setNewGallery({ title: '', desc: '', tag: 'CHI TIẾT', category: 'home', image_url: '/assets/images/arsenal-home.jpg' });
         loadAllData();
       }
@@ -187,7 +243,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteGallery = async (id: string) => {
-    if (!confirm('Xóa mục ảnh này?')) return;
+    if (!confirm('Xóa mục ảnh này khỏi Supabase?')) return;
     try {
       await fetch(`/api/gallery?id=${id}`, { method: 'DELETE' });
       showToast('Đã xóa mục ảnh', 'info');
@@ -212,7 +268,7 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Thêm danh hiệu cúp thành công', 'success');
+        showToast('Thêm danh hiệu cúp thành công vào Supabase', 'success');
         setNewTrophy({ title: '', count_label: '18x', years: '', desc: '', icon: '🛡️', is_highlight: false });
         loadAllData();
       }
@@ -222,7 +278,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteTrophy = async (id: string) => {
-    if (!confirm('Xóa cúp này?')) return;
+    if (!confirm('Xóa cúp này khỏi Supabase?')) return;
     try {
       await fetch(`/api/trophies?id=${id}`, { method: 'DELETE' });
       showToast('Đã xóa danh hiệu', 'info');
@@ -247,7 +303,7 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        showToast('Thêm cột mốc lịch sử thành công', 'success');
+        showToast('Thêm cột mốc lịch sử thành công vào Supabase', 'success');
         setNewTimeline({ year_label: '1886', title: '', content: '', is_highlight: false });
         loadAllData();
       }
@@ -257,7 +313,7 @@ export default function AdminPage() {
   };
 
   const handleDeleteTimeline = async (id: string) => {
-    if (!confirm('Xóa cột mốc này?')) return;
+    if (!confirm('Xóa cột mốc này khỏi Supabase?')) return;
     try {
       await fetch(`/api/timeline?id=${id}`, { method: 'DELETE' });
       showToast('Đã xóa cột mốc', 'info');
@@ -267,6 +323,86 @@ export default function AdminPage() {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--mute)' }}>
+        Đang khởi động hệ thống quản trị...
+      </div>
+    );
+  }
+
+  // LOGIN SCREEN
+  if (!isAuthenticated) {
+    return (
+      <div style={{
+        minHeight: '100vh', background: 'radial-gradient(ellipse at 50% 30%, rgba(216, 30, 61, 0.2), transparent 70%), var(--bg)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24
+      }}>
+        <div style={{
+          maxWidth: 420, width: '100%', background: 'var(--card)', border: '1px solid var(--line-strong)',
+          borderRadius: 16, padding: 36, boxShadow: '0 25px 50px rgba(0,0,0,0.8)', textAlign: 'center'
+        }}>
+          <img src="/assets/images/arsenal-1886-crest.png" alt="Arsenal 1886" style={{ width: 64, height: 64, objectFit: 'contain', margin: '0 auto 16px' }} />
+          <h2 style={{ fontFamily: 'Big Shoulders Display', fontSize: 28, fontWeight: 900, color: 'var(--gold)', letterSpacing: '0.05em', marginBottom: 6 }}>
+            QUẢN TRỊ ARSENAL 1886
+          </h2>
+          <p style={{ color: 'var(--mute)', fontSize: 13.5, marginBottom: 24 }}>Vui lòng xác thực tài khoản quản trị để truy cập dữ liệu Supabase.</p>
+
+          {loginError && (
+            <div style={{ background: 'var(--red-dim)', border: '1px solid var(--red)', color: '#ff6b81', padding: '10px 14px', borderRadius: 8, fontSize: 13, fontWeight: 700, marginBottom: 18, textAlign: 'left' }}>
+              ⚠️ {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16, textAlign: 'left' }}>
+            <div>
+              <label style={{ fontSize: 12, color: 'var(--mute)', display: 'block', marginBottom: 6 }}>Tên đăng nhập (Username)</label>
+              <input
+                required
+                type="text"
+                value={usernameInput}
+                onChange={e => setUsernameInput(e.target.value)}
+                style={{ width: '100%', padding: '12px 14px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 8, color: '#fff', fontSize: 14 }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: 'var(--mute)', display: 'block', marginBottom: 6 }}>Mật khẩu (Password)</label>
+              <input
+                required
+                type="password"
+                placeholder="Nhập mật khẩu..."
+                value={passwordInput}
+                onChange={e => setPasswordInput(e.target.value)}
+                style={{ width: '100%', padding: '12px 14px', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 8, color: '#fff', fontSize: 14 }}
+              />
+            </div>
+
+            <div style={{ background: 'var(--card-2)', border: '1px dashed var(--line-strong)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: 'var(--gold)' }}>
+              🔑 Tài khoản mặc định: <b>admin</b> / Mật khẩu: <b>12345</b>
+            </div>
+
+            <button
+              type="submit"
+              style={{
+                marginTop: 6, background: 'var(--red)', color: '#fff', padding: '14px',
+                borderRadius: 8, fontWeight: 800, fontSize: 15, cursor: 'pointer', border: 'none'
+              }}
+            >
+              Đăng Nhập Quản Trị →
+            </button>
+          </form>
+
+          <div style={{ marginTop: 24, borderTop: '1px solid var(--line)', paddingTop: 16 }}>
+            <Link href="/" style={{ fontSize: 13, color: 'var(--mute)', textDecoration: 'none' }}>
+              ← Quay lại Trang Chủ Khách Hàng
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // AUTHENTICATED ADMIN DASHBOARD
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', padding: '30px 24px' }}>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
@@ -274,12 +410,19 @@ export default function AdminPage() {
         {/* TOP BAR */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <img src="/assets/images/arsenal-1886-crest.png" alt="Arsenal" style={{ width: 40, height: 40 }} />
+            <img src="/assets/images/arsenal-1886-crest.png" alt="Arsenal" style={{ width: 44, height: 44 }} />
             <div>
-              <h1 style={{ fontFamily: 'Big Shoulders Display', fontSize: 32, fontWeight: 900, color: 'var(--gold)', lineHeight: 1 }}>
-                ARSENAL 1886 — ADMIN PORTAL
-              </h1>
-              <div style={{ fontFamily: 'JetBrains Mono', fontSize: 11, color: 'var(--mute)' }}>HỆ THỐNG QUẢN LÝ DỮ LIỆU THỰC THỜI (SQLITE EMBEDDED DATABASE)</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <h1 style={{ fontFamily: 'Big Shoulders Display', fontSize: 32, fontWeight: 900, color: 'var(--gold)', lineHeight: 1 }}>
+                  ARSENAL 1886 — ADMIN PORTAL
+                </h1>
+                <span style={{ background: 'var(--gold-dim)', color: 'var(--gold)', border: '1px solid var(--gold)', fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 12 }}>
+                  SUPABASE POSTGRESQL LIVE
+                </span>
+              </div>
+              <div style={{ fontFamily: 'JetBrains Mono', fontSize: 11, color: 'var(--mute)', marginTop: 2 }}>
+                Đang đăng nhập với tư cách: <b style={{ color: 'var(--cream)' }}>admin</b> (Super Administrator)
+              </div>
             </div>
           </div>
 
@@ -292,10 +435,17 @@ export default function AdminPage() {
             </button>
             <Link
               href="/"
-              style={{ background: 'var(--red)', color: '#fff', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 800, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}
+              target="_blank"
+              style={{ background: 'var(--card-2)', border: '1px solid var(--line-strong)', color: 'var(--gold)', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 700, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}
             >
-              🏠 Về Trang Chủ
+              🌐 Mở Trang Chủ
             </Link>
+            <button
+              onClick={handleLogout}
+              style={{ background: 'var(--red-dim)', border: '1px solid var(--red)', color: '#ff6b81', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}
+            >
+              🚪 Đăng xuất
+            </button>
           </div>
         </div>
 
@@ -355,13 +505,13 @@ export default function AdminPage() {
         {activeTab === 'orders' && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)' }}>Danh Sách Đơn Hàng Realtime</h3>
-              <span style={{ fontSize: 13, color: 'var(--mute)' }}>Tự động lưu vào `data/arsenal_db.json`</span>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)' }}>Danh Sách Đơn Hàng (Realtime Supabase)</h3>
+              <span style={{ fontSize: 13, color: 'var(--mute)' }}>Tự động đồng bộ với Cloud PostgreSQL</span>
             </div>
 
             {orders.length === 0 ? (
               <div style={{ background: 'var(--card)', padding: 40, borderRadius: 12, textAlign: 'center', color: 'var(--mute)' }}>
-                Chưa có đơn hàng nào được đặt. Hãy đặt thử trên trang chủ!
+                Chưa có đơn hàng nào trong cơ sở dữ liệu Supabase. Hãy đặt thử trên trang chủ!
               </div>
             ) : (
               <div style={{ overflowX: 'auto', background: 'var(--card)', borderRadius: 12, border: '1px solid var(--line)' }}>
@@ -402,7 +552,7 @@ export default function AdminPage() {
                           )}
                         </td>
                         <td style={{ padding: '14px 16px', fontWeight: 800, color: 'var(--cream)' }}>
-                          {ord.total_amount ? ord.total_amount.toLocaleString('vi-VN') + 'đ' : '0đ'}
+                          {ord.total_amount ? Number(ord.total_amount).toLocaleString('vi-VN') + 'đ' : '0đ'}
                         </td>
                         <td style={{ padding: '14px 16px' }}>
                           <span style={{ fontSize: 12, background: 'var(--card-2)', padding: '3px 8px', borderRadius: 4, border: '1px solid var(--line)' }}>
@@ -448,13 +598,13 @@ export default function AdminPage() {
         {activeTab === 'products' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24 }}>
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Danh Sách Sản Phẩm</h3>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Danh Sách Sản Phẩm Trong DB</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {products.map((prod, idx) => (
                   <div key={prod.id || idx} style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 10, padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <div style={{ fontWeight: 800, color: 'var(--cream)', fontSize: 16 }}>{prod.name}</div>
-                      <div style={{ color: 'var(--gold)', fontSize: 14, fontWeight: 700 }}>{prod.price.toLocaleString('vi-VN')}đ · {prod.version}</div>
+                      <div style={{ color: 'var(--gold)', fontSize: 14, fontWeight: 700 }}>{Number(prod.price).toLocaleString('vi-VN')}đ · {prod.version}</div>
                       <div style={{ color: 'var(--mute)', fontSize: 12 }}>Tag: {prod.tag} | Còn hàng: {prod.in_stock ? 'Có' : 'Hết'}</div>
                     </div>
                     <button
@@ -470,7 +620,7 @@ export default function AdminPage() {
 
             {/* Add Product Form */}
             <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: 24 }}>
-              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Sản Phẩm Mới</h4>
+              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Sản Phẩm Mới Vào Supabase</h4>
               <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div>
                   <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tên sản phẩm *</label>
@@ -502,7 +652,7 @@ export default function AdminPage() {
                     >
                       <option value="Home">Sân Nhà (Home)</option>
                       <option value="Away">Sân Khách (Away)</option>
-                      <option value="Combo">Bộ Combo 2 Áo</option>
+                      <option value="Combo 2">Bộ Combo 2 Áo</option>
                       <option value="Collector">Collector Edition</option>
                     </select>
                   </div>
@@ -520,7 +670,7 @@ export default function AdminPage() {
                   type="submit"
                   style={{ background: 'var(--gold)', color: '#000', padding: '12px', borderRadius: 8, fontWeight: 800, cursor: 'pointer', marginTop: 8 }}
                 >
-                  Lưu Sản Phẩm Vào Database
+                  Lưu Sản Phẩm Vào Supabase
                 </button>
               </form>
             </div>
@@ -531,7 +681,7 @@ export default function AdminPage() {
         {activeTab === 'gallery' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 24 }}>
             <div>
-              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Thư Viện Ảnh (6 Mục Thực Tế)</h3>
+              <h3 style={{ fontSize: 20, fontWeight: 800, color: 'var(--cream)', marginBottom: 16 }}>Thư Viện Ảnh (Realtime Supabase)</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 {gallery.map((g, idx) => (
                   <div key={g.id || idx} style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 8, padding: 12, position: 'relative' }}>
@@ -551,7 +701,7 @@ export default function AdminPage() {
 
             {/* Add Gallery Form */}
             <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: 24 }}>
-              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Ảnh Mới Vào Thư Viện</h4>
+              <h4 style={{ fontSize: 18, fontWeight: 800, color: 'var(--gold)', marginBottom: 16 }}>+ Thêm Ảnh Mới Vào Supabase</h4>
               <form onSubmit={handleAddGallery} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div>
                   <label style={{ fontSize: 12, color: 'var(--mute)' }}>Tiêu đề ảnh *</label>
@@ -612,7 +762,7 @@ export default function AdminPage() {
                   type="submit"
                   style={{ background: 'var(--gold)', color: '#000', padding: '12px', borderRadius: 8, fontWeight: 800, cursor: 'pointer', marginTop: 8 }}
                 >
-                  Lưu Ảnh Vào Database
+                  Lưu Ảnh Vào Supabase
                 </button>
               </form>
             </div>
@@ -703,7 +853,7 @@ export default function AdminPage() {
                   type="submit"
                   style={{ background: 'var(--gold)', color: '#000', padding: '12px', borderRadius: 8, fontWeight: 800, cursor: 'pointer', marginTop: 8 }}
                 >
-                  Lưu Danh Hiệu Vào Database
+                  Lưu Danh Hiệu Vào Supabase
                 </button>
               </form>
             </div>
@@ -774,7 +924,7 @@ export default function AdminPage() {
                   type="submit"
                   style={{ background: 'var(--gold)', color: '#000', padding: '12px', borderRadius: 8, fontWeight: 800, cursor: 'pointer', marginTop: 8 }}
                 >
-                  Lưu Cột Mốc Vào Database
+                  Lưu Cột Mốc Vào Supabase
                 </button>
               </form>
             </div>
